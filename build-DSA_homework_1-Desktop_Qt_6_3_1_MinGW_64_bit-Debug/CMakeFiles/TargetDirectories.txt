@@ -1,0 +1,7 @@
+C:/Users/pokeb/OneDrive/Desktop/Code/DSA_2023_JR/build-DSA_homework_1-Desktop_Qt_6_3_1_MinGW_64_bit-Debug/CMakeFiles/DSA_homework_1.dir
+C:/Users/pokeb/OneDrive/Desktop/Code/DSA_2023_JR/build-DSA_homework_1-Desktop_Qt_6_3_1_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+C:/Users/pokeb/OneDrive/Desktop/Code/DSA_2023_JR/build-DSA_homework_1-Desktop_Qt_6_3_1_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/pokeb/OneDrive/Desktop/Code/DSA_2023_JR/build-DSA_homework_1-Desktop_Qt_6_3_1_MinGW_64_bit-Debug/CMakeFiles/list_install_components.dir
+C:/Users/pokeb/OneDrive/Desktop/Code/DSA_2023_JR/build-DSA_homework_1-Desktop_Qt_6_3_1_MinGW_64_bit-Debug/CMakeFiles/install.dir
+C:/Users/pokeb/OneDrive/Desktop/Code/DSA_2023_JR/build-DSA_homework_1-Desktop_Qt_6_3_1_MinGW_64_bit-Debug/CMakeFiles/install/local.dir
+C:/Users/pokeb/OneDrive/Desktop/Code/DSA_2023_JR/build-DSA_homework_1-Desktop_Qt_6_3_1_MinGW_64_bit-Debug/CMakeFiles/install/strip.dir
