@@ -17,6 +17,7 @@ template <typename T>
 Node<T>::Node(T value, Node* pointer)
     :value{value}, pointer{pointer} {}
 
+
 template <typename T>
 class Stack
 {
@@ -39,15 +40,6 @@ Stack<T>::Stack()
 {
     stackSize = 0;
     topPointer = nullptr;
-    cout <<"   /////////  "<< endl;
-    cout <<"  // ///// // "<< endl;
-    cout <<" /// ///// ///"<< endl;
-    cout <<" /// ///// ///"<< endl;
-    cout <<" /////////////"<< endl;
-    cout <<" //XXXXXXXXX//"<< endl;
-    cout <<"  //       // "<< endl;
-    cout <<"   /////////  "<< endl;
-    cout <<" "<< endl;
 }
 
 template <typename T>
@@ -100,15 +92,6 @@ Stack<T>::~Stack()
         pop();
         stackSize += 1;
     }
-    cout <<"   /////////  "<< endl;
-    cout <<"  / / /// / / "<< endl;
-    cout <<" /// ///// ///"<< endl;
-    cout <<" // / /// / //"<< endl;
-    cout <<" /////////////"<< endl;
-    cout <<" //     ... //"<< endl;
-    cout <<"  //////...// "<< endl;
-    cout <<"   /////////  "<< endl;
-    cout <<" "<< endl;
 }
 
 // tests
