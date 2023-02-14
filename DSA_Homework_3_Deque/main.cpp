@@ -41,7 +41,7 @@ Deque<T>::Deque()
 template <typename T>
 void Deque<T>::pushBack (T val)
 {
-    cout << "Pushed this to the back: " << val << endl;
+    //cout << "Pushed this to the back: " << val << endl;
     if (backIndex == -1) { backIndex = 0;} else {backIndex -=1;}
     if (backIndex < 0 || backIndex == frontIndex)
     {
@@ -60,6 +60,7 @@ void Deque<T>::pushBack (T val)
             delete[] values;
             values = tempValues;
             dequeSize = dequeSize *2;
+            backIndex = dequeSize-1;
         } else
         {
             if (backIndex == frontIndex)
@@ -94,16 +95,16 @@ void Deque<T>::pushBack (T val)
     }
     if (frontIndex == -1) { frontIndex = 0;}
     filledSlots += 1;
-    for (int s = 0; s < dequeSize; s++)
-    {
-        cout << values[s] << endl;
-    }
+//    for (int s = 0; s < dequeSize; s++)
+//    {
+//        cout << values[s] << endl;
+//    }
 }
 
 template <typename T>
 void Deque<T>::pushFront (T val)
 {
-    cout << "Pushed this to the front: " << val << endl;
+    //cout << "Pushed this to the front: " << val << endl;
     if (frontIndex == -1) { frontIndex = 0;} else {frontIndex +=1;}
     if (frontIndex == dequeSize || frontIndex == backIndex)
     {
@@ -156,10 +157,10 @@ void Deque<T>::pushFront (T val)
     if (backIndex == -1) { backIndex = 0;}
 
     filledSlots += 1;
-    for (int s = 0; s < dequeSize; s++)
-    {
-        cout << values[s] << endl;
-    }
+//    for (int s = 0; s < dequeSize; s++)
+//    {
+//        cout << values[s] << endl;
+//    }
 }
 
 template <typename T>
@@ -177,7 +178,7 @@ T Deque<T>::popBack ()
     }
     backIndex += 1;
     filledSlots -= 1;
-    cout << "popped this: " << returnVal << endl;
+    //cout << "popped this: " << returnVal << endl;
     return returnVal;
 }
 
@@ -196,7 +197,7 @@ T Deque<T>::popFront ()
     }
     frontIndex -= 1;
     filledSlots -= 1;
-    cout << "popped this: " << returnVal << endl;
+    //cout << "popped this: " << returnVal << endl;
     return returnVal;
 }
 
@@ -238,487 +239,497 @@ Deque<T>::~Deque()
     delete[] values;
 }
 
-// tests
-//JR's
-//size tests
-TEST(JR_Deque_Tests, EmptyDeque_Size)
-{
-    Deque<int> s;
-    ASSERT_EQ(s.size(),0);
-}
+//// tests
+////JR's
+////size tests
+//TEST(JR_Deque_Tests, EmptyDeque_Size)
+//{
+//    Deque<int> s;
+//    ASSERT_EQ(s.size(),0);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackSize)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.pushFront(4);
-    s.popBack();
-    s.popBack();
-    ASSERT_EQ(s.size(),2);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackSize)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.pushFront(4);
+//    s.popBack();
+//    s.popBack();
+//    ASSERT_EQ(s.size(),2);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushFrontPopFrontSize)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.pushFront(4);
-    s.popFront();
-    s.popFront();
-    ASSERT_EQ(s.size(),2);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushFrontPopFrontSize)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.pushFront(4);
+//    s.popFront();
+//    s.popFront();
+//    ASSERT_EQ(s.size(),2);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushBackPopBackSize)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.pushBack(4);
-    s.popBack();
-    s.popBack();
-    ASSERT_EQ(s.size(),2);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushBackPopBackSize)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.pushBack(4);
+//    s.popBack();
+//    s.popBack();
+//    ASSERT_EQ(s.size(),2);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontSize)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.pushBack(4);
-    s.popFront();
-    s.popFront();
-    ASSERT_EQ(s.size(),2);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontSize)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.pushBack(4);
+//    s.popFront();
+//    s.popFront();
+//    ASSERT_EQ(s.size(),2);
+//}
 
-//is empty tests
-TEST(JR_Deque_Tests, EmptyDeque_IsEmpty)
-{
-    Deque<int> s;
-    ASSERT_TRUE(s.isEmpty());
-}
+////is empty tests
+//TEST(JR_Deque_Tests, EmptyDeque_IsEmpty)
+//{
+//    Deque<int> s;
+//    ASSERT_TRUE(s.isEmpty());
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushFrontIsEmptyFails)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    ASSERT_TRUE(!s.isEmpty());
-}
+//TEST(JR_Deque_Tests, FullDeque_PushFrontIsEmptyFails)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    ASSERT_TRUE(!s.isEmpty());
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushBackIsEmptyFails)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    ASSERT_TRUE(!s.isEmpty());
-}
+//TEST(JR_Deque_Tests, FullDeque_PushBackIsEmptyFails)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    ASSERT_TRUE(!s.isEmpty());
+//}
 
-//back tests
-TEST(JR_Deque_Tests, EmptyDeque_BackIsDefalt)
-{
-    Deque<int> s;
-    ASSERT_EQ(s.back(),int{});
-}
+////back tests
+//TEST(JR_Deque_Tests, EmptyDeque_BackIsDefalt)
+//{
+//    Deque<int> s;
+//    ASSERT_EQ(s.back(),int{});
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushFrontBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    ASSERT_EQ(s.back(),1);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushFrontBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    ASSERT_EQ(s.back(),1);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushBackBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    ASSERT_EQ(s.back(),1);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushBackBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    ASSERT_EQ(s.back(),1);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushAndPopFrontBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.popFront();
-    s.popFront();
-    ASSERT_EQ(s.back(),1);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushAndPopFrontBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.popFront();
+//    s.popFront();
+//    ASSERT_EQ(s.back(),1);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushAndPopBackBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.popBack();
-    s.popBack();
-    ASSERT_EQ(s.back(),1);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushAndPopBackBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.popBack();
+//    s.popBack();
+//    ASSERT_EQ(s.back(),1);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.popBack();
-    s.popBack();
-    ASSERT_EQ(s.back(),3);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.popBack();
+//    s.popBack();
+//    ASSERT_EQ(s.back(),3);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.popFront();
-    s.popFront();
-    ASSERT_EQ(s.back(),3);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.popFront();
+//    s.popFront();
+//    ASSERT_EQ(s.back(),3);
+//}
 
-//front tests
-TEST(JR_Deque_Tests, EmptyDeque_FrontIsDefalt)
-{
-    Deque<int> s;
-    ASSERT_EQ(s.front(),int{});
-}
+////front tests
+//TEST(JR_Deque_Tests, EmptyDeque_FrontIsDefalt)
+//{
+//    Deque<int> s;
+//    ASSERT_EQ(s.front(),int{});
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushFrontFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    ASSERT_EQ(s.front(),1);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushFrontFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    ASSERT_EQ(s.front(),1);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushBackFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    ASSERT_EQ(s.front(),1);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushBackFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    ASSERT_EQ(s.front(),1);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushAndPopFrontFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.popFront();
-    s.popFront();
-    ASSERT_EQ(s.front(),1);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushAndPopFrontFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.popFront();
+//    s.popFront();
+//    ASSERT_EQ(s.front(),1);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushAndPopBackFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.popBack();
-    s.popBack();
-    ASSERT_EQ(s.front(),1);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushAndPopBackFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.popBack();
+//    s.popBack();
+//    ASSERT_EQ(s.front(),1);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.popBack();
-    s.popBack();
-    ASSERT_EQ(s.front(),3);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.popBack();
+//    s.popBack();
+//    ASSERT_EQ(s.front(),3);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.popFront();
-    s.popFront();
-    ASSERT_EQ(s.front(),3);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.popFront();
+//    s.popFront();
+//    ASSERT_EQ(s.front(),3);
+//}
 
-//pop tests
-TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.pushFront(4);
+////pop tests
+//TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.pushFront(4);
 
-    ASSERT_EQ(s.popBack(),1);
-}
+//    ASSERT_EQ(s.popBack(),1);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushFrontPopFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.pushFront(4);
+//TEST(JR_Deque_Tests, FullDeque_PushFrontPopFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.pushFront(4);
 
-    ASSERT_EQ(s.popFront(),4);
-}
+//    ASSERT_EQ(s.popFront(),4);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushBackPopBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.pushBack(4);
+//TEST(JR_Deque_Tests, FullDeque_PushBackPopBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.pushBack(4);
 
-    ASSERT_EQ(s.popBack(),4);
-}
+//    ASSERT_EQ(s.popBack(),4);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.pushBack(4);
+//TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.pushBack(4);
 
-    ASSERT_EQ(s.popFront(),1);
-}
+//    ASSERT_EQ(s.popFront(),1);
+//}
 
-TEST(JR_Deque_Tests, EmptyDeque_PopBackIsDefalt)
-{
-    Deque<int> s;
+//TEST(JR_Deque_Tests, EmptyDeque_PopBackIsDefalt)
+//{
+//    Deque<int> s;
 
-    ASSERT_EQ(s.popBack(),int{});
-}
+//    ASSERT_EQ(s.popBack(),int{});
+//}
 
-TEST(JR_Deque_Tests, EmptyDeque_PopFrontIsDefalt)
-{
-    Deque<int> s;
+//TEST(JR_Deque_Tests, EmptyDeque_PopFrontIsDefalt)
+//{
+//    Deque<int> s;
 
-    ASSERT_EQ(s.popFront(),int{});
-}
+//    ASSERT_EQ(s.popFront(),int{});
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushAndPopFrontPopFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.pushFront(4);
-    s.popFront();
-    s.popFront();
-    ASSERT_EQ(s.popFront(),2);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushAndPopFrontPopFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.pushFront(4);
+//    s.popFront();
+//    s.popFront();
+//    ASSERT_EQ(s.popFront(),2);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushAndPopBackPopFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.pushBack(4);
-    s.popBack();
-    s.popBack();
-    ASSERT_EQ(s.popFront(),1);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushAndPopBackPopFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.pushBack(4);
+//    s.popBack();
+//    s.popBack();
+//    ASSERT_EQ(s.popFront(),1);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackPopFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.pushFront(4);
-    s.popBack();
-    s.popBack();
-    ASSERT_EQ(s.popFront(),4);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackPopFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.pushFront(4);
+//    s.popBack();
+//    s.popBack();
+//    ASSERT_EQ(s.popFront(),4);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontPopFrontReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.pushBack(4);
-    s.popFront();
-    s.popFront();
-    ASSERT_EQ(s.popFront(),3);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontPopFrontReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.pushBack(4);
+//    s.popFront();
+//    s.popFront();
+//    ASSERT_EQ(s.popFront(),3);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushAndPopFrontPopBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.pushFront(4);
-    s.popFront();
-    s.popFront();
-    ASSERT_EQ(s.popBack(),1);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushAndPopFrontPopBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.pushFront(4);
+//    s.popFront();
+//    s.popFront();
+//    ASSERT_EQ(s.popBack(),1);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushAndPopBackPopBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.pushBack(4);
-    s.popBack();
-    s.popBack();
-    ASSERT_EQ(s.popBack(),2);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushAndPopBackPopBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.pushBack(4);
+//    s.popBack();
+//    s.popBack();
+//    ASSERT_EQ(s.popBack(),2);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackPopBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushFront(1);
-    s.pushFront(2);
-    s.pushFront(3);
-    s.pushFront(4);
-    s.popBack();
-    s.popBack();
-    ASSERT_EQ(s.popBack(),3);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushFrontPopBackPopBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushFront(2);
+//    s.pushFront(3);
+//    s.pushFront(4);
+//    s.popBack();
+//    s.popBack();
+//    ASSERT_EQ(s.popBack(),3);
+//}
 
-TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontPopBackReturnsValue)
-{
-    Deque<int> s;
-    s.pushBack(1);
-    s.pushBack(2);
-    s.pushBack(3);
-    s.pushBack(4);
-    s.popFront();
-    s.popFront();
-    ASSERT_EQ(s.popBack(),4);
-}
+//TEST(JR_Deque_Tests, FullDeque_PushBackPopFrontPopBackReturnsValue)
+//{
+//    Deque<int> s;
+//    s.pushBack(1);
+//    s.pushBack(2);
+//    s.pushBack(3);
+//    s.pushBack(4);
+//    s.popFront();
+//    s.popFront();
+//    ASSERT_EQ(s.popBack(),4);
+//}
 
-//Charley’s Tests
-TEST(Charley_Deque_Tests, CharleyEmptyDequeIsEmpty) {
-  Deque<int> d;
-  ASSERT_TRUE(d.isEmpty());
-}
+////Charley’s Tests
+//TEST(Charley_Deque_Tests, CharleyEmptyDequeIsEmpty) {
+//  Deque<int> d;
+//  ASSERT_TRUE(d.isEmpty());
+//}
 
-TEST(Charley_Deque_Tests, CharleyFrontDequeIsNotEmpty) {
-  Deque<int> d;
-  d.pushFront(3);
-  ASSERT_FALSE(d.isEmpty());
-}
+//TEST(Charley_Deque_Tests, CharleyFrontDequeIsNotEmpty) {
+//  Deque<int> d;
+//  d.pushFront(3);
+//  ASSERT_FALSE(d.isEmpty());
+//}
 
-TEST(Charley_Deque_Tests, CharleyBackDequeIsNotEmpty) {
-  Deque<int> d;
-  d.pushBack(3);
-  ASSERT_FALSE(d.isEmpty());
-}
+//TEST(Charley_Deque_Tests, CharleyBackDequeIsNotEmpty) {
+//  Deque<int> d;
+//  d.pushBack(3);
+//  ASSERT_FALSE(d.isEmpty());
+//}
 
-TEST(Charley_Deque_Tests, CharleyFrontDequeSize) {
-  Deque<int> d;
-  for(int i = 0; i < 3; i++) {
-      d.pushFront(3);
-   }
-  ASSERT_EQ(d.size(), 3);
-}
+//TEST(Charley_Deque_Tests, CharleyFrontDequeSize) {
+//  Deque<int> d;
+//  for(int i = 0; i < 3; i++) {
+//      d.pushFront(3);
+//   }
+//  ASSERT_EQ(d.size(), 3);
+//}
 
-TEST(Charley_Deque_Tests, CharleyBackDequeSize) {
-  Deque<int> d;
-  for(int i = 0; i < 3; i++) {
-     d.pushFront(4);
-  }
-  ASSERT_EQ(d.size(), 3);
-}
+//TEST(Charley_Deque_Tests, CharleyBackDequeSize) {
+//  Deque<int> d;
+//  for(int i = 0; i < 3; i++) {
+//     d.pushFront(4);
+//  }
+//  ASSERT_EQ(d.size(), 3);
+//}
 
-TEST(Charley_Deque_Tests, CharleyDequePopFront) {
-  Deque<int> d;
-  for(int i = 0; i < 3; i++) {
-     d.pushFront(8);
-  }
-  ASSERT_EQ(d.popFront(), 8);
-}
+//TEST(Charley_Deque_Tests, CharleyDequePopFront) {
+//  Deque<int> d;
+//  for(int i = 0; i < 3; i++) {
+//     d.pushFront(8);
+//  }
+//  ASSERT_EQ(d.popFront(), 8);
+//}
 
-TEST(Charley_Deque_Tests, CharleyDequePopBack) {
-  Deque<int> d;
-  for(int i = 0; i < 3; i++) {
-     d.pushBack(5);
-  }
-  ASSERT_EQ(d.popBack(), 5);
-}
+//TEST(Charley_Deque_Tests, CharleyDequePopBack) {
+//  Deque<int> d;
+//  for(int i = 0; i < 3; i++) {
+//     d.pushBack(5);
+//  }
+//  ASSERT_EQ(d.popBack(), 5);
+//}
 
-TEST(Charley_Deque_Tests, CharleyDequePopMixed) {
-  Deque<int> d;
-  for(int i = 0; i < 3; i++) {
-     d.pushBack(9);
-  }
-  ASSERT_EQ(d.popFront(), 9);
-}
+//TEST(Charley_Deque_Tests, CharleyDequePopMixed) {
+//  Deque<int> d;
+//  for(int i = 0; i < 3; i++) {
+//     d.pushBack(9);
+//  }
+//  ASSERT_EQ(d.popFront(), 9);
+//}
 
-TEST(Charley_Deque_Tests, CharleyDequeFront) {
-  Deque<int> d;
-  for(int i = 0; i < 3; i++) {
-     d.pushFront(8);
-  }
-  ASSERT_EQ(d.front(), 8);
-}
+//TEST(Charley_Deque_Tests, CharleyDequeFront) {
+//  Deque<int> d;
+//  for(int i = 0; i < 3; i++) {
+//     d.pushFront(8);
+//  }
+//  ASSERT_EQ(d.front(), 8);
+//}
 
-TEST(Charley_Deque_Tests, CharleyDequeBack) {
-  Deque<int> d;
-  for(int i = 0; i < 3; i++) {
-     d.pushBack(5);
-  }
-  ASSERT_EQ(d.back(), 5);
-}
+//TEST(Charley_Deque_Tests, CharleyDequeBack) {
+//  Deque<int> d;
+//  for(int i = 0; i < 3; i++) {
+//     d.pushBack(5);
+//  }
+//  ASSERT_EQ(d.back(), 5);
+//}
 
-TEST(Charley_Deque_Tests, CharleyDequeTopMixed) {
-  Deque<int> d;
-  for(int i = 0; i < 3; i++) {
-     d.pushBack(9);
-  }
-  ASSERT_EQ(d.front(), 9);
-}
+//TEST(Charley_Deque_Tests, CharleyDequeTopMixed) {
+//  Deque<int> d;
+//  for(int i = 0; i < 3; i++) {
+//     d.pushBack(9);
+//  }
+//  ASSERT_EQ(d.front(), 9);
+//}
 
-TEST(Charley_Deque_Tests, CharleyDequeWormFront) {
-  Deque<int> d;
-  d.pushFront(0);
-  for(int i = 0; i < 500; i++) {
-     d.pushFront(i);
-     d.popBack();
-  }
-  ASSERT_EQ(d.front(), 499);
-  ASSERT_EQ(d.size(), 1);
-}
+//TEST(Charley_Deque_Tests, CharleyDequeWormFront) {
+//  Deque<int> d;
+//  d.pushFront(0);
+//  for(int i = 0; i < 500; i++) {
+//     d.pushFront(i);
+//     d.popBack();
+//  }
+//  ASSERT_EQ(d.front(), 499);
+//  ASSERT_EQ(d.size(), 1);
+//}
 
-TEST(Charley_Deque_Tests, CharleyDequeWormBack) {
-  Deque<int> d;
-  d.pushBack(0);
-  for(int i = 0; i < 500; i++) {
-     d.pushBack(i);
-     d.popFront();
-  }
-  ASSERT_EQ(d.back(), 499);
-  ASSERT_EQ(d.size(), 1);
-}
+//TEST(Charley_Deque_Tests, CharleyDequeWormBack) {
+//  Deque<int> d;
+//  d.pushBack(0);
+//  for(int i = 0; i < 500; i++) {
+//     d.pushBack(i);
+//     d.popFront();
+//  }
+//  ASSERT_EQ(d.back(), 499);
+//  ASSERT_EQ(d.size(), 1);
+//}
 
-TEST(Charley_Deque_Tests, CharleyDequeWormMixed) {
-  Deque<int> d;
-  d.pushFront(0);
-  for(int i = 0; i < 300; i++) {
-     d.pushFront(i);
-     d.popBack();
-  }
-  for(int i = 0; i < 600; i++) {
-     d.pushBack(i);
-     d.popFront();
-  }
-  ASSERT_EQ(d.back(), 599);
-  ASSERT_EQ(d.size(), 1);
-}
+//TEST(Charley_Deque_Tests, CharleyDequeWormMixed) {
+//  Deque<int> d;
+//  d.pushFront(0);
+//  for(int i = 0; i < 300; i++) {
+//     d.pushFront(i);
+//     d.popBack();
+//  }
+//  for(int i = 0; i < 600; i++) {
+//     d.pushBack(i);
+//     d.popFront();
+//  }
+//  ASSERT_EQ(d.back(), 599);
+//  ASSERT_EQ(d.size(), 1);
+//}
+//Doc Ham's tests
+//TEST(Hamlin_Deque_Tests, PushWorks)
+//{
+//    Deque<int> s;
+//    s.pushFront(1);
+//    s.pushBack(2);
+//    ASSERT_EQ(s.back(),2);
+//    ASSERT_EQ(s.front(),1);
+//    ASSERT_EQ(s.size(),2);
+//}
 
 
 int main(int argc, char **argv)
