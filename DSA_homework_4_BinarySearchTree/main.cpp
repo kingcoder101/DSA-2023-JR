@@ -172,7 +172,7 @@ template <typename T>
 vector<T> Node<T>::nextInOrder ()
 {
     vector<T> localReturn = {};
-    if (rightPointer)
+    if (leftPointer)
     {
         vector<T> smallerReturn = leftPointer ? leftPointer->nextInOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
@@ -181,7 +181,7 @@ vector<T> Node<T>::nextInOrder ()
         }
     }
     localReturn.push_back(value);
-    if (leftPointer)
+    if (rightPointer)
     {
         vector<T> smallerReturn = rightPointer ? rightPointer->nextInOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
@@ -197,17 +197,17 @@ vector<T> Node<T>::nextPreOrder ()
 {
     vector<T> localReturn = {};
     localReturn.push_back(value);
-    if (rightPointer)
+    if (leftPointer)
     {
-        vector<T> smallerReturn = leftPointer ? leftPointer->nextInOrder() : vector<T> {};
+        vector<T> smallerReturn = leftPointer ? leftPointer->nextPreOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
         {
             localReturn.push_back(smallerReturn[o]);
         }
     }
-    if (leftPointer)
+    if (rightPointer)
     {
-        vector<T> smallerReturn = rightPointer ? rightPointer->nextInOrder() : vector<T> {};
+        vector<T> smallerReturn = rightPointer ? rightPointer->nextPreOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
         {
             localReturn.push_back(smallerReturn[o]);
@@ -220,17 +220,17 @@ template <typename T>
 vector<T> Node<T>::nextPostOrder ()
 {
     vector<T> localReturn = {};
-    if (rightPointer)
+    if (leftPointer)
     {
-        vector<T> smallerReturn = leftPointer ? leftPointer->nextInOrder() : vector<T> {};
+        vector<T> smallerReturn = leftPointer ? leftPointer->nextPostOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
         {
             localReturn.push_back(smallerReturn[o]);
         }
     }
-    if (leftPointer)
+    if (rightPointer)
     {
-        vector<T> smallerReturn = rightPointer ? rightPointer->nextInOrder() : vector<T> {};
+        vector<T> smallerReturn = rightPointer ? rightPointer->nextPostOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
         {
             localReturn.push_back(smallerReturn[o]);
@@ -577,6 +577,36 @@ TEST(JR_BSTree_Tests, InOrderWorks)
 
     vector<int> t {2,3,4,5,6,7,8};
     ASSERT_EQ(s.inOrder(), t);
+}
+
+TEST(JR_BSTree_Tests, PreOrderWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    s.insert(7);
+    s.insert(8);
+    s.insert(6);
+
+    vector<int> t {5,3,2,4,7,6,8};
+    ASSERT_EQ(s.preOrder(), t);
+}
+
+TEST(JR_BSTree_Tests, PostOrderWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    s.insert(7);
+    s.insert(8);
+    s.insert(6);
+
+    vector<int> t {2,4,3,6,8,7,5};
+    ASSERT_EQ(s.postOrder(), t);
 }
 
 int main(int argc, char **argv)
