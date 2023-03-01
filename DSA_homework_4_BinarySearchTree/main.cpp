@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include "gtest/gtest.h"
 
 using namespace std;
@@ -173,7 +174,7 @@ vector<T> Node<T>::nextInOrder ()
     vector<T> localReturn = {};
     if (rightPointer)
     {
-        vector<T> smallerReturn = leftPointer->nextInOrder();
+        vector<T> smallerReturn = leftPointer ? leftPointer->nextInOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
         {
             localReturn.push_back(smallerReturn[o]);
@@ -182,7 +183,7 @@ vector<T> Node<T>::nextInOrder ()
     localReturn.push_back(value);
     if (leftPointer)
     {
-        vector<T> smallerReturn = rightPointer->nextInOrder();
+        vector<T> smallerReturn = rightPointer ? rightPointer->nextInOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
         {
             localReturn.push_back(smallerReturn[o]);
@@ -198,7 +199,7 @@ vector<T> Node<T>::nextPreOrder ()
     localReturn.push_back(value);
     if (rightPointer)
     {
-        vector<T> smallerReturn = leftPointer->nextPreOrder();
+        vector<T> smallerReturn = leftPointer ? leftPointer->nextInOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
         {
             localReturn.push_back(smallerReturn[o]);
@@ -206,7 +207,7 @@ vector<T> Node<T>::nextPreOrder ()
     }
     if (leftPointer)
     {
-        vector<T> smallerReturn = rightPointer->nextPreOrder();
+        vector<T> smallerReturn = rightPointer ? rightPointer->nextInOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
         {
             localReturn.push_back(smallerReturn[o]);
@@ -221,7 +222,7 @@ vector<T> Node<T>::nextPostOrder ()
     vector<T> localReturn = {};
     if (rightPointer)
     {
-        vector<T> smallerReturn = leftPointer->nextPostOrder();
+        vector<T> smallerReturn = leftPointer ? leftPointer->nextInOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
         {
             localReturn.push_back(smallerReturn[o]);
@@ -229,7 +230,7 @@ vector<T> Node<T>::nextPostOrder ()
     }
     if (leftPointer)
     {
-        vector<T> smallerReturn = rightPointer->nextPostOrder();
+        vector<T> smallerReturn = rightPointer ? rightPointer->nextInOrder() : vector<T> {};
         for (int o = 0; o < smallerReturn.size(); o++)
         {
             localReturn.push_back(smallerReturn[o]);
