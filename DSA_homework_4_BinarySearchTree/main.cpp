@@ -281,6 +281,7 @@ void BSTree<T>::insert (T val)
     if (!rootPointer)
     {
         rootPointer = new Node(val);
+        cout << val << "attampted to push" << endl;
         numberOfNodes += 1;
     } else
     {
@@ -300,6 +301,7 @@ void BSTree<T>::remove (T val)
             {
                 delete rootPointer;
                 rootPointer = nullptr;
+                cout << val << "gone" << endl;
 
             } else
             {
@@ -321,7 +323,9 @@ void BSTree<T>::remove (T val)
                 {
                     Node<T>* rootDelete = rootPointer;
                     rootPointer = rootPointer->rightPointer;
+                    rootDelete->rightPointer = nullptr;
                     delete rootDelete;
+                    cout << val << "gone" << endl;
                 }
 
             }
@@ -401,104 +405,104 @@ BSTree<T>::~BSTree()
 // tests
 //JR's
 //includes
-//TEST(JR_BSTree_Tests, FullTreeIsInIncludesWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    ASSERT_TRUE(s.includes(2));
-//}
+TEST(JR_BSTree_Tests, FullTreeIsInIncludesWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    ASSERT_TRUE(s.includes(2));
+}
 
-//TEST(JR_BSTree_Tests, FullTreeIsOutIncludesWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    ASSERT_TRUE(!s.includes(9));
-//}
+TEST(JR_BSTree_Tests, FullTreeIsOutIncludesWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    ASSERT_TRUE(!s.includes(9));
+}
 
-//TEST(JR_BSTree_Tests, FullTreeIsOutInsertAndRemoveIncludesWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    s.remove(2);
-//    s.remove(4);
-//    s.insert(6);
-//    cout << "freeze" << endl;
-//    ASSERT_TRUE(!s.includes(2));
+TEST(JR_BSTree_Tests, FullTreeIsOutInsertAndRemoveIncludesWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    s.remove(2);
+    s.remove(4);
+    s.insert(6);
+    cout << "freeze" << endl;
+    ASSERT_TRUE(!s.includes(2));
 
-//}
+}
 
-//TEST(JR_BSTree_Tests, FullTreeIsInInsertAndRemoveIncludesWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    s.remove(2);
-//    s.remove(4);
-//    s.insert(2);
-//    ASSERT_TRUE(s.includes(2));
-//}
+TEST(JR_BSTree_Tests, FullTreeIsInInsertAndRemoveIncludesWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    s.remove(2);
+    s.remove(4);
+    s.insert(2);
+    ASSERT_TRUE(s.includes(2));
+}
 
-//TEST(JR_BSTree_Tests, EmptyTreeIncludesWorks)
-//{
-//    BSTree<int> s;
-//    ASSERT_TRUE(!s.includes(2));
-//}
+TEST(JR_BSTree_Tests, EmptyTreeIncludesWorks)
+{
+    BSTree<int> s;
+    ASSERT_TRUE(!s.includes(2));
+}
 
-////size
-//TEST(JR_BSTree_Tests, FullTreeSizeWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    ASSERT_EQ(s.size(), 4);
-//}
+//size
+TEST(JR_BSTree_Tests, FullTreeSizeWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    ASSERT_EQ(s.size(), 4);
+}
 
-//TEST(JR_BSTree_Tests, EmptyTreeSizeWorks)
-//{
-//    BSTree<int> s;
-//    ASSERT_EQ(s.size(),0);
-//}
+TEST(JR_BSTree_Tests, EmptyTreeSizeWorks)
+{
+    BSTree<int> s;
+    ASSERT_EQ(s.size(),0);
+}
 
-////isEmpty
-//TEST(JR_BSTree_Tests, FullTreeIsEmptyWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    ASSERT_TRUE(!s.isEmpty());
-//}
+//isEmpty
+TEST(JR_BSTree_Tests, FullTreeIsEmptyWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    ASSERT_TRUE(!s.isEmpty());
+}
 
-//TEST(JR_BSTree_Tests, EmptyTreeIsEmptyWorks)
-//{
-//    BSTree<int> s;
-//    ASSERT_TRUE(s.isEmpty());
-//}
+TEST(JR_BSTree_Tests, EmptyTreeIsEmptyWorks)
+{
+    BSTree<int> s;
+    ASSERT_TRUE(s.isEmpty());
+}
 
-////insert and remove
-//TEST(JR_BSTree_Tests, FullTreeFiftyInsertWorks)
-//{
-//    BSTree<int> s;
-//    for (int i = 0; i < 50; i++)
-//    {
-//        s.insert(i);
-//    }
-//    ASSERT_EQ(s.size(),50);
-//}
+//insert and remove
+TEST(JR_BSTree_Tests, FullTreeFiftyInsertWorks)
+{
+    BSTree<int> s;
+    for (int i = 0; i < 50; i++)
+    {
+        s.insert(i);
+    }
+    ASSERT_EQ(s.size(),50);
+}
 
 TEST(JR_BSTree_Tests, FullTreeFiftyRemoveWorks) //fails
 {
@@ -507,6 +511,7 @@ TEST(JR_BSTree_Tests, FullTreeFiftyRemoveWorks) //fails
     {
         s.insert(i);
     }
+
     for (int i = 0; i < 50; i++)
     {
         s.remove(i);
