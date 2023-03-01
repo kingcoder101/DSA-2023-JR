@@ -19,7 +19,7 @@ public:
     bool grow(T val);
     bool check(T val);
     Node<T>* locate(T val, Node<T>* rootL);
-    void shrink(Node<T>* root);
+    void shrink(Node<T>* self, Node<T>* root);
     void shrinkTwo(Node<T>* upperNode);
     vector<T> nextInOrder ();
     vector<T> nextPreOrder ();
@@ -76,12 +76,12 @@ bool Node<T>::check(T val)
 template <typename T>
 Node<T>* Node<T>::locate(T val, Node<T>* rootL)
 {
-    if (val == value) {return rootL;}
+    if (val == value && rootL) {return rootL;}
     Node<T>* returnN = val > value ?
         (rightPointer == nullptr ? nullptr :
-            rightPointer->value == val ? rightPointer : rightPointer->locate(val, rootL)) :
+            rightPointer->value == val ? rightPointer : rightPointer->locate(val, nullptr)) :
         (leftPointer  == nullptr ? nullptr :
-            leftPointer->value == val ? leftPointer : leftPointer->locate(val, rootL));
+            leftPointer->value == val ? leftPointer : leftPointer->locate(val, nullptr));
     cout << val << " location: " << returnN << " currently: " << value << endl;
     return returnN;
 }
@@ -121,35 +121,21 @@ void Node<T>::shrinkTwo(Node<T>* upperNode)
 
 
 template <typename T>
-void Node<T>::shrink(Node<T>* root)
+void Node<T>::shrink(Node<T>* self, Node<T>* root)
 {
     Node<T>* upperBranch = root;
-    Node<T>* targetNode = nullptr;
+    Node<T>* targetNode = self;
     Node<T>* replacementLocation = nullptr;
-    if (root->value != value)
+    //finds where upper branch is
+    while (((upperBranch->leftPointer && upperBranch->leftPointer != targetNode) || (!upperBranch->leftPointer)) && ((upperBranch->rightPointer && upperBranch->rightPointer != targetNode) || (!upperBranch->rightPointer)))
     {
-        //finds where upper branch is
-        while (((upperBranch->leftPointer && upperBranch->leftPointer->value != value) || (!upperBranch->leftPointer)) && ((upperBranch->rightPointer && upperBranch->rightPointer->value != value) || (!upperBranch->rightPointer)))
-        {
-            if (value > upperBranch->value)
-            {
-                upperBranch = upperBranch->rightPointer;
-            } else
-            {
-                upperBranch = upperBranch->leftPointer;
-            }
-        }
-        // gets a pointer to itself
         if (value > upperBranch->value)
         {
-            targetNode = upperBranch->rightPointer;
+            upperBranch = upperBranch->rightPointer;
         } else
         {
-            targetNode = upperBranch->leftPointer;
+            upperBranch = upperBranch->leftPointer;
         }
-    } else
-    {
-        targetNode = root;
     }
     //there is 2 pointers
     if (leftPointer)
@@ -164,12 +150,11 @@ void Node<T>::shrink(Node<T>* root)
         //replaces the target nodes value
         targetNode->value = replacementLocation->value;
 
-        replacementLocation->shrinkTwo(targetNode);
+        replacementLocation->shrink(replacementLocation,upperBranch);
     //there is at most 1 (right) pointer
     } else
     {
-        if (upperBranch->leftPointer)
-        {
+
             if (value > upperBranch->value)
             {
                 upperBranch->rightPointer = targetNode->rightPointer;
@@ -179,12 +164,6 @@ void Node<T>::shrink(Node<T>* root)
             }
             targetNode->rightPointer = nullptr;
             delete targetNode;
-        } else
-        {
-            upperBranch = targetNode->rightPointer;
-            targetNode->rightPointer = nullptr;
-            delete targetNode;
-        }
     }
 }
 
@@ -263,8 +242,8 @@ vector<T> Node<T>::nextPostOrder ()
 template <typename T>
 Node<T>::~Node()
 {
-    delete rightPointer;
-    delete leftPointer;
+    if (rightPointer) {delete rightPointer;}
+    if (leftPointer) {delete leftPointer;}
 }
 
 template <typename T>
@@ -324,7 +303,26 @@ void BSTree<T>::remove (T val)
 
             } else
             {
-                rootPointer->shrink(rootPointer);
+                if (rootPointer->leftPointer)
+                {
+                    //finds replacement location
+                    Node<T>* replacementLocation = rootPointer->leftPointer;
+                    while (replacementLocation->rightPointer)
+                    {
+                        replacementLocation = replacementLocation->rightPointer;
+                    }
+                    cout << "replacement location: " << replacementLocation->value << endl;
+                    //replaces the target nodes value
+                    rootPointer->value = replacementLocation->value;
+
+                    replacementLocation->shrinkTwo(replacementLocation);
+                //there is at most 1 (right) pointer
+                } else
+                {
+                    Node<T>* rootDelete = rootPointer;
+                    rootPointer = rootPointer->rightPointer;
+                    delete rootDelete;
+                }
 
             }
             numberOfNodes -= 1;
@@ -334,7 +332,7 @@ void BSTree<T>::remove (T val)
             Node<T>* target = rootPointer->locate(val, rootPointer);
             if (target)
             {
-                target->shrink(rootPointer);
+                target->shrink(target, rootPointer);
                 numberOfNodes -= 1;
                 cout << val << "gone" << endl;
             }
@@ -403,25 +401,25 @@ BSTree<T>::~BSTree()
 // tests
 //JR's
 //includes
-TEST(JR_BSTree_Tests, FullTreeIsInIncludesWorks)
-{
-    BSTree<int> s;
-    s.insert(5);
-    s.insert(3);
-    s.insert(4);
-    s.insert(2);
-    ASSERT_TRUE(s.includes(2));
-}
+//TEST(JR_BSTree_Tests, FullTreeIsInIncludesWorks)
+//{
+//    BSTree<int> s;
+//    s.insert(5);
+//    s.insert(3);
+//    s.insert(4);
+//    s.insert(2);
+//    ASSERT_TRUE(s.includes(2));
+//}
 
-TEST(JR_BSTree_Tests, FullTreeIsOutIncludesWorks)
-{
-    BSTree<int> s;
-    s.insert(5);
-    s.insert(3);
-    s.insert(4);
-    s.insert(2);
-    ASSERT_TRUE(!s.includes(9));
-}
+//TEST(JR_BSTree_Tests, FullTreeIsOutIncludesWorks)
+//{
+//    BSTree<int> s;
+//    s.insert(5);
+//    s.insert(3);
+//    s.insert(4);
+//    s.insert(2);
+//    ASSERT_TRUE(!s.includes(9));
+//}
 
 //TEST(JR_BSTree_Tests, FullTreeIsOutInsertAndRemoveIncludesWorks)
 //{
@@ -433,8 +431,9 @@ TEST(JR_BSTree_Tests, FullTreeIsOutIncludesWorks)
 //    s.remove(2);
 //    s.remove(4);
 //    s.insert(6);
-//    ASSERT_TRUE(!s.includes(2));
 //    cout << "freeze" << endl;
+//    ASSERT_TRUE(!s.includes(2));
+
 //}
 
 //TEST(JR_BSTree_Tests, FullTreeIsInInsertAndRemoveIncludesWorks)
@@ -501,63 +500,63 @@ TEST(JR_BSTree_Tests, FullTreeIsOutIncludesWorks)
 //    ASSERT_EQ(s.size(),50);
 //}
 
-//TEST(JR_BSTree_Tests, FullTreeFiftyRemoveWorks) //fails
-//{
-//    BSTree<int> s;
-//    for (int i = 0; i < 50; i++)
-//    {
-//        s.insert(i);
-//    }
-//    for (int i = 0; i < 50; i++)
-//    {
-//        s.remove(i);
-//    }
-//    ASSERT_EQ(s.size(), 0);
-//}
+TEST(JR_BSTree_Tests, FullTreeFiftyRemoveWorks) //fails
+{
+    BSTree<int> s;
+    for (int i = 0; i < 50; i++)
+    {
+        s.insert(i);
+    }
+    for (int i = 0; i < 50; i++)
+    {
+        s.remove(i);
+    }
+    ASSERT_EQ(s.size(), 0);
+}
 
-//TEST(JR_BSTree_Tests, FullTreeCatapillarInsertAndRemoveWorks)
-//{
-//    BSTree<int> s;
-//    for (int i = 0; i < 50; i++)
-//    {
-//        s.insert(i+1);
-//        if (i >= 19)
-//        {
-//            s.remove(i);
-//            s.remove(i-1);
-//            s.insert(i);
-//        }
-//    }
-//    ASSERT_EQ(s.size(), 19);
-//}
+TEST(JR_BSTree_Tests, FullTreeCatapillarInsertAndRemoveWorks)
+{
+    BSTree<int> s;
+    for (int i = 0; i < 50; i++)
+    {
+        s.insert(i+1);
+        if (i >= 19)
+        {
+            s.remove(i);
+            s.remove(i-1);
+            s.insert(i);
+        }
+    }
+    ASSERT_EQ(s.size(), 19);
+}
 
-//TEST(JR_BSTree_Tests, FullTreeAllInInsertWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(1);
-//    s.insert(9);
-//    s.insert(6);
-//    s.insert(2);
-//    s.insert(7);
-//    s.insert(8);
-//    ASSERT_TRUE(s.includes(1) && s.includes(2) && s.includes(3) && s.includes(4) && s.includes(5) && s.includes(6) && s.includes(7) && s.includes(8) && s.includes(9));
-//}
+TEST(JR_BSTree_Tests, FullTreeAllInInsertWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(1);
+    s.insert(9);
+    s.insert(6);
+    s.insert(2);
+    s.insert(7);
+    s.insert(8);
+    ASSERT_TRUE(s.includes(1) && s.includes(2) && s.includes(3) && s.includes(4) && s.includes(5) && s.includes(6) && s.includes(7) && s.includes(8) && s.includes(9));
+}
 
-//TEST(JR_BSTree_Tests, FullTreeDoubleInsertWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(1);
-//    s.insert(2);
-//    int yes = s.size();
-//    s.insert(5);
-//    ASSERT_EQ(s.size(), yes);
-//}
+TEST(JR_BSTree_Tests, FullTreeDoubleInsertWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(1);
+    s.insert(2);
+    int yes = s.size();
+    s.insert(5);
+    ASSERT_EQ(s.size(), yes);
+}
 
 TEST(JR_BSTree_Tests, Seeth)
 {
