@@ -14,9 +14,12 @@ private:
     T value;
     Node<T>* rightPointer;
     Node<T>* leftPointer;
+    int height;
 public:
-    Node(T value);
+    Node(T value, int height);
     ~Node();
+    void rotateRight();
+    void rotateLeft();
     bool grow(T val);
     bool check(T val);
     Node<T>* locate(T val, Node<T>* rootL);
@@ -29,8 +32,8 @@ friend BSTree<T>;
 };
 
 template <typename T>
-Node<T>::Node(T value)
-    :value{value}
+Node<T>::Node(T value, int height)
+    :value{value}, height{height}
 {
     rightPointer = nullptr;
     leftPointer = nullptr;
@@ -41,7 +44,7 @@ bool Node<T>::grow(T val)
 {
     if (val < value && leftPointer == nullptr)
     {
-        leftPointer = new Node(val);  return true;
+        leftPointer = new Node(val, height+1);  return true;
     }  else
     {
         if (val < value)
@@ -51,7 +54,7 @@ bool Node<T>::grow(T val)
     }
     if (val > value && rightPointer == nullptr)
     {
-        rightPointer = new Node(val);
+        rightPointer = new Node(val, height+1);
         return true;
     } else
     {
@@ -243,7 +246,7 @@ void BSTree<T>::insert (T val)
 {
     if (!rootPointer)
     {
-        rootPointer = new Node(val);
+        rootPointer = new Node(val,0);
         numberOfNodes += 1;
     } else
     {
