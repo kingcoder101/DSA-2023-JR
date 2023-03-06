@@ -21,7 +21,6 @@ public:
     bool check(T val);
     Node<T>* locate(T val, Node<T>* rootL);
     void shrink(Node<T>* self, Node<T>* root);
-    void shrinkTwo(Node<T>* upperNode);
     vector<T> nextInOrder ();
     vector<T> nextPreOrder ();
     vector<T> nextPostOrder ();
@@ -84,36 +83,6 @@ Node<T>* Node<T>::locate(T val, Node<T>* rootL)
             leftPointer->value == val ? leftPointer : leftPointer->locate(val, nullptr));
     return returnN;
 }
-
-template <typename T>
-void Node<T>::shrinkTwo(Node<T>* upperNode)
-{
-    Node<T>* upperBranch = upperNode;
-    Node<T>* targetNode = nullptr;
-    //finds its real upper branch
-    if (upperBranch->leftPointer->value != value)
-    {
-        upperBranch = upperBranch->leftPointer;
-        targetNode = upperBranch->rightPointer;
-        while (targetNode->value != value)
-        {
-            upperBranch = upperBranch->rightPointer;
-            targetNode = upperBranch->rightPointer;
-        }
-    } else
-    {
-        targetNode = upperBranch->leftPointer;
-    }
-
-
-    //deletes itself
-
-        upperBranch->leftPointer = targetNode->rightPointer;
-
-    targetNode->rightPointer = nullptr;
-    delete targetNode;
-}
-
 
 template <typename T>
 void Node<T>::shrink(Node<T>* self, Node<T>* root)
@@ -307,7 +276,7 @@ void BSTree<T>::remove (T val)
                     //replaces the target nodes value
                     rootPointer->value = replacementLocation->value;
 
-                    replacementLocation->shrinkTwo(replacementLocation);
+                    replacementLocation->shrink(replacementLocation, rootPointer);
                 //there is at most 1 (right) pointer
                 } else
                 {
@@ -389,166 +358,166 @@ BSTree<T>::~BSTree()
         delete rootPointer;
 }
 
-// tests
+//tests
 //JR's
 //includes
-//TEST(JR_BSTree_Tests, FullTreeIsInIncludesWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    ASSERT_TRUE(s.includes(2));
-//}
+TEST(JR_BSTree_Tests, FullTreeIsInIncludesWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    ASSERT_TRUE(s.includes(2));
+}
 
-//TEST(JR_BSTree_Tests, FullTreeIsOutIncludesWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    ASSERT_TRUE(!s.includes(9));
-//}
+TEST(JR_BSTree_Tests, FullTreeIsOutIncludesWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    ASSERT_TRUE(!s.includes(9));
+}
 
-//TEST(JR_BSTree_Tests, FullTreeIsOutInsertAndRemoveIncludesWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    s.remove(2);
-//    s.remove(4);
-//    s.insert(6);
-//    cout << "freeze" << endl;
-//    ASSERT_TRUE(!s.includes(2));
+TEST(JR_BSTree_Tests, FullTreeIsOutInsertAndRemoveIncludesWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    s.remove(2);
+    s.remove(4);
+    s.insert(6);
+    cout << "freeze" << endl;
+    ASSERT_TRUE(!s.includes(2));
 
-//}
+}
 
-//TEST(JR_BSTree_Tests, FullTreeIsInInsertAndRemoveIncludesWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    s.remove(2);
-//    s.remove(4);
-//    s.insert(2);
-//    ASSERT_TRUE(s.includes(2));
-//}
+TEST(JR_BSTree_Tests, FullTreeIsInInsertAndRemoveIncludesWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    s.remove(2);
+    s.remove(4);
+    s.insert(2);
+    ASSERT_TRUE(s.includes(2));
+}
 
-//TEST(JR_BSTree_Tests, EmptyTreeIncludesWorks)
-//{
-//    BSTree<int> s;
-//    ASSERT_TRUE(!s.includes(2));
-//}
+TEST(JR_BSTree_Tests, EmptyTreeIncludesWorks)
+{
+    BSTree<int> s;
+    ASSERT_TRUE(!s.includes(2));
+}
 
-////size
-//TEST(JR_BSTree_Tests, FullTreeSizeWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    ASSERT_EQ(s.size(), 4);
-//}
+//size
+TEST(JR_BSTree_Tests, FullTreeSizeWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    ASSERT_EQ(s.size(), 4);
+}
 
-//TEST(JR_BSTree_Tests, EmptyTreeSizeWorks)
-//{
-//    BSTree<int> s;
-//    ASSERT_EQ(s.size(),0);
-//}
+TEST(JR_BSTree_Tests, EmptyTreeSizeWorks)
+{
+    BSTree<int> s;
+    ASSERT_EQ(s.size(),0);
+}
 
-////isEmpty
-//TEST(JR_BSTree_Tests, FullTreeIsEmptyWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    ASSERT_TRUE(!s.isEmpty());
-//}
+//isEmpty
+TEST(JR_BSTree_Tests, FullTreeIsEmptyWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    ASSERT_TRUE(!s.isEmpty());
+}
 
-//TEST(JR_BSTree_Tests, EmptyTreeIsEmptyWorks)
-//{
-//    BSTree<int> s;
-//    ASSERT_TRUE(s.isEmpty());
-//}
+TEST(JR_BSTree_Tests, EmptyTreeIsEmptyWorks)
+{
+    BSTree<int> s;
+    ASSERT_TRUE(s.isEmpty());
+}
 
-////insert and remove
-//TEST(JR_BSTree_Tests, FullTreeFiftyInsertWorks)
-//{
-//    BSTree<int> s;
-//    for (int i = 0; i < 50; i++)
-//    {
-//        s.insert(i);
-//    }
-//    ASSERT_EQ(s.size(),50);
-//}
+//insert and remove
+TEST(JR_BSTree_Tests, FullTreeFiftyInsertWorks)
+{
+    BSTree<int> s;
+    for (int i = 0; i < 50; i++)
+    {
+        s.insert(i);
+    }
+    ASSERT_EQ(s.size(),50);
+}
 
-//TEST(JR_BSTree_Tests, FullTreeFiftyRemoveWorks) //fails
-//{
-//    BSTree<int> s;
-//    for (int i = 0; i < 50; i++)
-//    {
-//        s.insert(i);
-//    }
+TEST(JR_BSTree_Tests, FullTreeFiftyRemoveWorks) //fails
+{
+    BSTree<int> s;
+    for (int i = 0; i < 50; i++)
+    {
+        s.insert(i);
+    }
 
-//    for (int i = 0; i < 50; i++)
-//    {
-//        s.remove(i);
-//    }
-//    ASSERT_EQ(s.size(), 0);
-//}
+    for (int i = 0; i < 50; i++)
+    {
+        s.remove(i);
+    }
+    ASSERT_EQ(s.size(), 0);
+}
 
-//TEST(JR_BSTree_Tests, FullTreeCatapillarInsertAndRemoveWorks)
-//{
-//    BSTree<int> s;
-//    for (int i = 0; i < 50; i++)
-//    {
-//        s.insert(i+1);
-//        if (i >= 19)
-//        {
-//            s.remove(i);
-//            s.remove(i-1);
-//            s.insert(i);
-//        }
-//    }
-//    ASSERT_EQ(s.size(), 19);
-//}
+TEST(JR_BSTree_Tests, FullTreeCatapillarInsertAndRemoveWorks)
+{
+    BSTree<int> s;
+    for (int i = 0; i < 50; i++)
+    {
+        s.insert(i+1);
+        if (i >= 19)
+        {
+            s.remove(i);
+            s.remove(i-1);
+            s.insert(i);
+        }
+    }
+    ASSERT_EQ(s.size(), 19);
+}
 
-//TEST(JR_BSTree_Tests, FullTreeAllInInsertWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(1);
-//    s.insert(9);
-//    s.insert(6);
-//    s.insert(2);
-//    s.insert(7);
-//    s.insert(8);
-//    ASSERT_TRUE(s.includes(1) && s.includes(2) && s.includes(3) && s.includes(4) && s.includes(5) && s.includes(6) && s.includes(7) && s.includes(8) && s.includes(9));
-//}
+TEST(JR_BSTree_Tests, FullTreeAllInInsertWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(1);
+    s.insert(9);
+    s.insert(6);
+    s.insert(2);
+    s.insert(7);
+    s.insert(8);
+    ASSERT_TRUE(s.includes(1) && s.includes(2) && s.includes(3) && s.includes(4) && s.includes(5) && s.includes(6) && s.includes(7) && s.includes(8) && s.includes(9));
+}
 
-//TEST(JR_BSTree_Tests, FullTreeDoubleInsertWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(1);
-//    s.insert(2);
-//    int yes = s.size();
-//    s.insert(5);
-//    ASSERT_EQ(s.size(), yes);
-//}
+TEST(JR_BSTree_Tests, FullTreeDoubleInsertWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(1);
+    s.insert(2);
+    int yes = s.size();
+    s.insert(5);
+    ASSERT_EQ(s.size(), yes);
+}
 
 TEST(JR_BSTree_Tests, InOrderWorks)
 {
