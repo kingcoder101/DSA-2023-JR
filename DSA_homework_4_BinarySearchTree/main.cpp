@@ -21,6 +21,7 @@ public:
     bool check(T val);
     Node<T>* locate(T val, Node<T>* rootL);
     void shrink(Node<T>* self, Node<T>* root);
+    void shrinkTwo(Node<T>* upperNode);
     vector<T> nextInOrder ();
     vector<T> nextPreOrder ();
     vector<T> nextPostOrder ();
@@ -83,6 +84,36 @@ Node<T>* Node<T>::locate(T val, Node<T>* rootL)
             leftPointer->value == val ? leftPointer : leftPointer->locate(val, nullptr));
     return returnN;
 }
+
+template <typename T>
+void Node<T>::shrinkTwo(Node<T>* upperNode)
+{
+    Node<T>* upperBranch = upperNode;
+    Node<T>* targetNode = nullptr;
+    //finds its real upper branch
+    if (upperBranch->leftPointer->value != value)
+    {
+        upperBranch = upperBranch->leftPointer;
+        targetNode = upperBranch->rightPointer;
+        while (targetNode->value != value)
+        {
+            upperBranch = upperBranch->rightPointer;
+            targetNode = upperBranch->rightPointer;
+        }
+    } else
+    {
+        targetNode = upperBranch->leftPointer;
+    }
+
+
+    //deletes itself
+
+        upperBranch->leftPointer = targetNode->rightPointer;
+
+    targetNode->rightPointer = nullptr;
+    delete targetNode;
+}
+
 
 template <typename T>
 void Node<T>::shrink(Node<T>* self, Node<T>* root)
@@ -391,6 +422,7 @@ BSTree<T>::~BSTree()
 //    s.remove(2);
 //    s.remove(4);
 //    s.insert(6);
+//    cout << "freeze" << endl;
 //    ASSERT_TRUE(!s.includes(2));
 
 //}
@@ -570,5 +602,3 @@ int main(int argc, char **argv)
 
     return res;
 }
-
-

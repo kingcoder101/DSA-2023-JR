@@ -40,6 +40,12 @@ Node<T>::Node(T value, int height)
 }
 
 template <typename T>
+void Node<T>::rotateRight()
+{
+
+}
+
+template <typename T>
 bool Node<T>::grow(T val)
 {
     if (val < value && leftPointer == nullptr)
