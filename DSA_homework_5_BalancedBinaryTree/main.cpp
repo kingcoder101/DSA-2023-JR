@@ -10,20 +10,21 @@ class BSTree;
 template <typename T>
 class Node
 {
-private:
+public:
     T value;
     Node<T>* rightPointer;
     Node<T>* leftPointer;
     int height;
 public:
-    Node(T value, int height);
+    Node(T value);
     ~Node();
-    void rotateRight();
-    void rotateLeft();
-    bool grow(T val);
+    void rotateRight(Node<T>* root);
+    void rotateLeft(Node<T>* root);
+    void correct(Node<T>* root);
+    bool grow(T val, Node<T>* root);
     bool check(T val);
     Node<T>* locate(T val, Node<T>* rootL);
-    void shrink(Node<T>* self, Node<T>* root);
+    bool shrink(T targetValue, Node<T>* root);
     vector<T> nextInOrder ();
     vector<T> nextPreOrder ();
     vector<T> nextPostOrder ();
@@ -32,47 +33,157 @@ friend BSTree<T>;
 };
 
 template <typename T>
-Node<T>::Node(T value, int height)
-    :value{value}, height{height}
+Node<T>::Node(T value)
+    :value{value}
 {
+    height = 0;
     rightPointer = nullptr;
     leftPointer = nullptr;
 }
 
 template <typename T>
-void Node<T>::rotateRight()
+void Node<T>::rotateRight(Node<T>* root)
 {
-
+    Node<T>* localUpperBranch = root;
+    //Node<T>* replacementLocation = nullptr;
+    //finds where upper branch is
+    while (((localUpperBranch->leftPointer && localUpperBranch->leftPointer->value != value) || (!localUpperBranch->leftPointer)) && ((localUpperBranch->rightPointer && localUpperBranch->rightPointer->value != value) || (!localUpperBranch->rightPointer)))
+    {
+        if (value > localUpperBranch->value)
+        {
+            localUpperBranch = localUpperBranch->rightPointer;
+        } else
+        {
+            localUpperBranch = localUpperBranch->leftPointer;
+        }
+    }
+    Node<T>* firstNode = leftPointer;
+    Node<T>* secondNode = firstNode->leftPointer;
+    //rotates the stuff
+    firstNode->leftPointer = secondNode->rightPointer;
+    secondNode->rightPointer = firstNode;
+    if (value > localUpperBranch->value)
+    {
+        localUpperBranch->rightPointer = secondNode;
+    } else
+    {
+        localUpperBranch->leftPointer = secondNode;
+    }
 }
 
 template <typename T>
-void Node<T>::rotateLeft()
+void Node<T>::rotateLeft(Node<T>* root)
 {
-
+    Node<T>* localUpperBranch = root;
+    //Node<T>* replacementLocation = nullptr;
+    //finds where upper branch is
+    while (((localUpperBranch->leftPointer && localUpperBranch->leftPointer->value != value) || (!localUpperBranch->leftPointer)) && ((localUpperBranch->rightPointer && localUpperBranch->rightPointer->value != value) || (!localUpperBranch->rightPointer)))
+    {
+        if (value > localUpperBranch->value)
+        {
+            localUpperBranch = localUpperBranch->rightPointer;
+        } else
+        {
+            if (value < localUpperBranch->value) {
+            localUpperBranch = localUpperBranch->leftPointer;}
+        }
+    }
+    Node<T>* firstNode = localUpperBranch->rightPointer;
+    Node<T>* secondNode = firstNode->rightPointer;
+    //rotates the stuff
+    firstNode->rightPointer = secondNode->leftPointer;
+    secondNode->leftPointer = firstNode;
+    if (value > localUpperBranch->value)
+    {
+        localUpperBranch->rightPointer = secondNode;
+    } else
+    {
+        localUpperBranch->leftPointer = secondNode;
+    }
 }
 
 template <typename T>
-bool Node<T>::grow(T val)
+void Node<T>::correct(Node<T>* root)
+{
+    int a = leftPointer ? leftPointer->height : - 1;
+    int b = rightPointer ? rightPointer->height : - 1;
+    if (a - b > 1)
+    {
+        rotateRight(root);
+    } else
+    {
+        if (a - b < -1)
+        {
+            rotateLeft(root);
+        }
+    }
+}
+
+template <typename T>
+bool Node<T>::grow(T val, Node<T>* root)
 {
     if (val < value && leftPointer == nullptr)
     {
-        leftPointer = new Node(val, height+1);  return true;
+        leftPointer = new Node(val);
+        //changes height
+        if (rightPointer)
+        {
+            height = rightPointer->height > leftPointer->height ? rightPointer->height+1 : leftPointer->height+1;
+        } else
+        {
+            height = leftPointer->height+1;
+        }
+        return true;
     }  else
     {
         if (val < value)
         {
-            return leftPointer->grow(val);
+            bool i = leftPointer->grow(val, root);
+            correct(root);
+            //changes height
+            if (i)
+            {
+                if (rightPointer)
+                {
+                    height = rightPointer->height > leftPointer->height ? rightPointer->height+1 : leftPointer->height+1;
+                } else
+                {
+                    height = leftPointer->height+1;
+                }
+            }
+            return i;
         }
     }
     if (val > value && rightPointer == nullptr)
     {
-        rightPointer = new Node(val, height+1);
+        rightPointer = new Node(val);
+        //changes height
+        if (leftPointer)
+        {
+            height = leftPointer->height > rightPointer->height ? leftPointer->height+1 : rightPointer->height+1;
+        } else
+        {
+            height = rightPointer->height+1;
+        }
         return true;
     } else
     {
         if (val > value)
         {
-            return rightPointer->grow(val);
+            bool i = rightPointer->grow(val, root);
+            correct(root);
+            //changes height
+            if (i)
+            {
+                if (leftPointer)
+                {
+                    height = leftPointer->height > rightPointer->height ? leftPointer->height+1 : rightPointer->height+1;
+                } else
+                {
+                    height = rightPointer->height+1;
+                }
+            }
+            return i;
         }
     }
     return false;
@@ -100,50 +211,206 @@ Node<T>* Node<T>::locate(T val, Node<T>* rootL)
 }
 
 template <typename T>
-void Node<T>::shrink(Node<T>* self, Node<T>* root)
+bool Node<T>::shrink(T targetValue, Node<T>* root)
 {
-    Node<T>* upperBranch = root;
-    Node<T>* targetNode = self;
+    Node<T>* targetNode = nullptr;
     Node<T>* replacementLocation = nullptr;
-    //finds where upper branch is
-    while (((upperBranch->leftPointer && upperBranch->leftPointer != targetNode) || (!upperBranch->leftPointer)) && ((upperBranch->rightPointer && upperBranch->rightPointer != targetNode) || (!upperBranch->rightPointer)))
+    bool success = false;
+    //left side
+    if(targetValue <= value)
     {
-        if (value > upperBranch->value)
+        if (leftPointer)
         {
-            upperBranch = upperBranch->rightPointer;
-        } else
-        {
-            upperBranch = upperBranch->leftPointer;
-        }
-    }
-    //there is 2 pointers
-    if (leftPointer)
-    {
-        //finds replacement location
-        replacementLocation = targetNode->leftPointer;
-        while (replacementLocation->rightPointer)
-        {
-            replacementLocation = replacementLocation->rightPointer;
-        }
-        //replaces the target nodes value
-        targetNode->value = replacementLocation->value;
-
-        replacementLocation->shrink(replacementLocation,upperBranch);
-    //there is at most 1 (right) pointer
-    } else
-    {
-
-            if (value > upperBranch->value)
+            if (leftPointer->value == targetValue)
             {
-                upperBranch->rightPointer = targetNode->rightPointer;
+                targetNode = leftPointer;
+                if(targetNode->leftPointer)
+                {
+                    //left pointer exists
+                    //finds replacement location
+                    replacementLocation = targetNode->leftPointer;
+                    while (replacementLocation->rightPointer)
+                    {
+                        replacementLocation = replacementLocation->rightPointer;
+                    }
+                    //replaces the target nodes value
+                    targetNode->value = replacementLocation->value;
+
+                    success = targetNode->shrink(replacementLocation->value, root);
+                    correct(root);
+                    if (success)
+                    {
+                        if (leftPointer)
+                        {
+                            if (rightPointer)
+                            {
+                                height = leftPointer->height >= rightPointer->height ? leftPointer->height + 1 : rightPointer->height + 1;
+                            } else
+                            {
+                                height = leftPointer->height + 1;
+                            }
+                        } else
+                        {
+                            if (rightPointer)
+                            {
+                                height = rightPointer->height;
+                            } else
+                            {
+                                height = 0;
+                            }
+                        }
+                    }
+                    return success;
+                } else
+                {
+                    //at most one right pointer
+                    leftPointer = targetNode->rightPointer;
+                    targetNode->rightPointer = nullptr;
+                    delete targetNode;
+                    height = rightPointer->height + 1;
+                    return true;
+                }
             } else
             {
-                upperBranch->leftPointer = targetNode->rightPointer;
+                success = leftPointer->shrink(targetValue, root);
             }
-            targetNode->rightPointer = nullptr;
-            delete targetNode;
+        }
+    } else //right side
+    {
+        if (rightPointer)
+        {
+            if (rightPointer->value == targetValue)
+            {
+                cout << "found: " << targetValue << endl;
+                targetNode = rightPointer;
+                if(targetNode->leftPointer)
+                {
+                    cout << "left pointer exist" << endl;
+                    //left pointer exists
+                    //finds replacement location
+
+                    replacementLocation = targetNode->leftPointer;
+                    while (replacementLocation->rightPointer)
+                    {
+                        replacementLocation = replacementLocation->rightPointer;
+                    }
+                    //replaces the target nodes value
+                    targetNode->value = replacementLocation->value;
+                    cout << "replaced with: " << rightPointer->value << endl;
+
+                    success = targetNode->shrink(replacementLocation->value, root);
+                    correct(root);
+                    if (success)
+                    {
+                        if (leftPointer)
+                        {
+                            if (rightPointer)
+                            {
+                                height = leftPointer->height >= rightPointer->height ? leftPointer->height + 1 : rightPointer->height + 1;
+                            } else
+                            {
+                                height = leftPointer->height + 1;
+                            }
+                        } else
+                        {
+                            if (rightPointer)
+                            {
+                                height = rightPointer->height;
+                            } else
+                            {
+                                height = 0;
+                            }
+                        }
+                    }
+                    return success;
+                } else
+                {
+                    //at most one right pointer
+                    rightPointer = targetNode->rightPointer;
+                    cout << "replaced with 2: " << rightPointer->value << endl;
+                    targetNode->rightPointer = nullptr;
+                    delete targetNode;
+                    height = rightPointer->height + 1;
+                    return true;
+                }
+            } else
+            {
+                success = rightPointer->shrink(targetValue, root);
+                if (success)
+                {
+                    if (leftPointer)
+                    {
+                        if (rightPointer)
+                        {
+                            height = leftPointer->height >= rightPointer->height ? leftPointer->height + 1 : rightPointer->height + 1;
+                        } else
+                        {
+                            height = leftPointer->height + 1;
+                        }
+                    } else
+                    {
+                        if (rightPointer)
+                        {
+                            height = rightPointer->height;
+                        } else
+                        {
+                            height = 0;
+                        }
+                    }
+                }
+                return success;
+            }
+        }
     }
+
+    return false;
 }
+
+//template <typename T>
+//void Node<T>::shrink(Node<T>* self, Node<T>* root)
+//{
+//    Node<T>* upperBranch = root;
+//    Node<T>* targetNode = self;
+//    Node<T>* replacementLocation = nullptr;
+//    //finds where upper branch is
+//    while (((upperBranch->leftPointer && upperBranch->leftPointer != targetNode) || (!upperBranch->leftPointer)) && ((upperBranch->rightPointer && upperBranch->rightPointer != targetNode) || (!upperBranch->rightPointer)))
+//    {
+//        if (value > upperBranch->value)
+//        {
+//            upperBranch = upperBranch->rightPointer;
+//        } else
+//        {
+//            upperBranch = upperBranch->leftPointer;
+//        }
+//    }
+//    //there is 2 pointers
+//    if (leftPointer)
+//    {
+//        //finds replacement location
+//        replacementLocation = targetNode->leftPointer;
+//        while (replacementLocation->rightPointer)
+//        {
+//            replacementLocation = replacementLocation->rightPointer;
+//        }
+//        //replaces the target nodes value
+//        targetNode->value = replacementLocation->value;
+
+//        replacementLocation->shrink(replacementLocation,upperBranch);
+//    //there is at most 1 (right) pointer
+//    } else
+//    {
+
+//            if (value > upperBranch->value)
+//            {
+//                upperBranch->rightPointer = targetNode->rightPointer;
+//            } else
+//            {
+//                upperBranch->leftPointer = targetNode->rightPointer;
+//            }
+//            targetNode->rightPointer = nullptr;
+//            delete targetNode;
+//    }
+//}
 
 template <typename T>
 vector<T> Node<T>::nextInOrder ()
@@ -227,7 +494,7 @@ Node<T>::~Node()
 template <typename T>
 class BSTree
 {
-private:
+public:
     Node<T>* rootPointer;
     int numberOfNodes;
 
@@ -258,11 +525,11 @@ void BSTree<T>::insert (T val)
 {
     if (!rootPointer)
     {
-        rootPointer = new Node(val,0);
+        rootPointer = new Node(val);
         numberOfNodes += 1;
     } else
     {
-        numberOfNodes += (rootPointer->grow(val) ? 1 : 0);
+        numberOfNodes += (rootPointer->grow(val, rootPointer) ? 1 : 0);
     }
 }
 
@@ -291,7 +558,7 @@ void BSTree<T>::remove (T val)
                     //replaces the target nodes value
                     rootPointer->value = replacementLocation->value;
 
-                    replacementLocation->shrinkTwo(replacementLocation);
+                    rootPointer->shrink(replacementLocation->value, rootPointer);
                 //there is at most 1 (right) pointer
                 } else
                 {
@@ -305,12 +572,9 @@ void BSTree<T>::remove (T val)
             numberOfNodes -= 1;
         } else
         {
-            Node<T>* target = rootPointer->locate(val, rootPointer);
-            if (target)
-            {
-                target->shrink(target, rootPointer);
-                numberOfNodes -= 1;
-            }
+            cout << "shrinking: " << val << endl;
+            rootPointer->shrink(val, rootPointer);
+            numberOfNodes -= 1;
         }
     }
 }
@@ -375,6 +639,7 @@ BSTree<T>::~BSTree()
 
 // tests
 //JR's
+
 //includes
 //TEST(JR_BSTree_Tests, FullTreeIsInIncludesWorks)
 //{
@@ -489,21 +754,30 @@ BSTree<T>::~BSTree()
 //    ASSERT_EQ(s.size(), 0);
 //}
 
-//TEST(JR_BSTree_Tests, FullTreeCatapillarInsertAndRemoveWorks)
-//{
-//    BSTree<int> s;
-//    for (int i = 0; i < 50; i++)
-//    {
-//        s.insert(i+1);
-//        if (i >= 19)
-//        {
-//            s.remove(i);
-//            s.remove(i-1);
-//            s.insert(i);
-//        }
-//    }
-//    ASSERT_EQ(s.size(), 19);
-//}
+TEST(JR_BSTree_Tests, FullTreeCatapillarInsertAndRemoveWorks)
+{
+    BSTree<int> s;
+    for (int i = 17; i < 50; i++)
+    {
+        s.insert(i+1);
+        if (i >= 19)
+        {
+            s.remove(i);
+            s.remove(i-1);
+            s.insert(i);
+        }
+    }
+    vector<int> t = {49,50};
+//    s.insert(2);
+//    s.insert(8);
+//    s.insert(3);
+//    s.insert(5);
+//    s.insert(4);
+//    s.remove(8);
+//    vector<int> t = {2, 3, 4, 5};
+
+    ASSERT_EQ(s.preOrder(), t);
+}
 
 //TEST(JR_BSTree_Tests, FullTreeAllInInsertWorks)
 //{
@@ -533,49 +807,62 @@ BSTree<T>::~BSTree()
 //    ASSERT_EQ(s.size(), yes);
 //}
 
-TEST(JR_BSTree_Tests, InOrderWorks)
-{
-    BSTree<int> s;
-    s.insert(5);
-    s.insert(3);
-    s.insert(4);
-    s.insert(2);
-    s.insert(7);
-    s.insert(8);
-    s.insert(6);
+//TEST(JR_BSTree_Tests, InOrderWorks)
+//{
+//    BSTree<int> s;
+//    s.insert(5);
+//    s.insert(3);
+//    s.insert(4);
+//    s.insert(2);
+//    s.insert(7);
+//    s.insert(8);
+//    s.insert(6);
 
-    vector<int> t {2,3,4,5,6,7,8};
-    ASSERT_EQ(s.inOrder(), t);
-}
+//    vector<int> t {2,3,4,5,6,7,8};
+//    ASSERT_EQ(s.inOrder(), t);
+//}
 
-TEST(JR_BSTree_Tests, PreOrderWorks)
-{
-    BSTree<int> s;
-    s.insert(5);
-    s.insert(3);
-    s.insert(4);
-    s.insert(2);
-    s.insert(7);
-    s.insert(8);
-    s.insert(6);
+//TEST(JR_BSTree_Tests, PreOrderWorks)
+//{
+//    BSTree<int> s;
+//    s.insert(5);
+//    s.insert(3);
+//    s.insert(4);
+//    s.insert(2);
+//    s.insert(7);
+//    s.insert(8);
+//    s.insert(6);
 
-    vector<int> t {5,3,2,4,7,6,8};
-    ASSERT_EQ(s.preOrder(), t);
-}
+//    vector<int> t {5,3,2,4,7,6,8};
+//    ASSERT_EQ(s.preOrder(), t);
+//}
+
+//TEST(JR_BSTree_Tests, PostOrderWorks)
+//{
+//    BSTree<int> s;
+//    s.insert(5);
+//    s.insert(3);
+//    s.insert(4);
+//    s.insert(2);
+//    s.insert(7);
+//    s.insert(8);
+//    s.insert(6);
+
+//    vector<int> t {2,4,3,6,8,7,5};
+//    ASSERT_EQ(s.postOrder(), t);
+//}
 
 TEST(JR_BSTree_Tests, PostOrderWorks)
 {
     BSTree<int> s;
+    s.insert(1);
     s.insert(5);
     s.insert(3);
-    s.insert(4);
-    s.insert(2);
     s.insert(7);
     s.insert(8);
     s.insert(6);
 
-    vector<int> t {2,4,3,6,8,7,5};
-    ASSERT_EQ(s.postOrder(), t);
+    ASSERT_EQ(s.rootPointer->height, 3);
 }
 
 int main(int argc, char **argv)
