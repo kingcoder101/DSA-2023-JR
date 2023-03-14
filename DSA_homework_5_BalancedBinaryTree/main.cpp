@@ -4,8 +4,21 @@
 
 using namespace std;
 
+
+
 template <typename T>
 class BSTree;
+
+template <typename T>
+class Node;
+
+template <typename T>
+class Duo
+{
+public:
+    bool succes;
+    Node<T>* pointer;
+};
 
 template <typename T>
 class Node
@@ -18,9 +31,9 @@ public:
 public:
     Node(T value);
     ~Node();
-    void rotateRight(Node<T>* root);
-    void rotateLeft(Node<T>* root);
-    void correct(Node<T>* root);
+    Node<T>* rotateRight(Node<T>* root);
+    Node<T>* rotateLeft(Node<T>* root);
+    Node<T>* correct(Node<T>* root);
     bool grow(T val, Node<T>* root);
     bool check(T val);
     Node<T>* locate(T val, Node<T>* rootL);
@@ -42,81 +55,107 @@ Node<T>::Node(T value)
 }
 
 template <typename T>
-void Node<T>::rotateRight(Node<T>* root)
+Node<T>* Node<T>::rotateRight(Node<T>* target)
 {
-    Node<T>* localUpperBranch = root;
-    //Node<T>* replacementLocation = nullptr;
-    //finds where upper branch is
-    while (((localUpperBranch->leftPointer && localUpperBranch->leftPointer->value != value) || (!localUpperBranch->leftPointer)) && ((localUpperBranch->rightPointer && localUpperBranch->rightPointer->value != value) || (!localUpperBranch->rightPointer)))
-    {
-        if (value > localUpperBranch->value)
-        {
-            localUpperBranch = localUpperBranch->rightPointer;
-        } else
-        {
-            localUpperBranch = localUpperBranch->leftPointer;
-        }
-    }
-    Node<T>* firstNode = leftPointer;
+    Node<T>* firstNode = target;
     Node<T>* secondNode = firstNode->leftPointer;
     //rotates the stuff
-    firstNode->leftPointer = secondNode->rightPointer;
+    firstNode->leftPointer = secondNode->rightPointer ? secondNode->rightPointer : nullptr;
     secondNode->rightPointer = firstNode;
-    if (value > localUpperBranch->value)
-    {
-        localUpperBranch->rightPointer = secondNode;
-    } else
-    {
-        localUpperBranch->leftPointer = secondNode;
-    }
+
+    firstNode->height = (firstNode->leftPointer ? firstNode->leftPointer->height : -1) > (firstNode->rightPointer ? firstNode->rightPointer->height : -1) ? (firstNode->leftPointer ? firstNode->leftPointer->height : -1) + 1 : (firstNode->rightPointer ? firstNode->rightPointer->height : -1) + 1;
+
+    secondNode->height = (secondNode->leftPointer ? secondNode->leftPointer->height : -1) > (secondNode->rightPointer ? secondNode->rightPointer->height : -1) ? (secondNode->leftPointer ? secondNode->leftPointer->height : -1)+1 : (secondNode->rightPointer ? secondNode->rightPointer->height : -1)+1;
+
+    return secondNode;
 }
 
 template <typename T>
-void Node<T>::rotateLeft(Node<T>* root)
+Node<T>* Node<T>::rotateLeft(Node<T>* target)
 {
-    Node<T>* localUpperBranch = root;
-    //Node<T>* replacementLocation = nullptr;
-    //finds where upper branch is
-    while (((localUpperBranch->leftPointer && localUpperBranch->leftPointer->value != value) || (!localUpperBranch->leftPointer)) && ((localUpperBranch->rightPointer && localUpperBranch->rightPointer->value != value) || (!localUpperBranch->rightPointer)))
-    {
-        if (value > localUpperBranch->value)
-        {
-            localUpperBranch = localUpperBranch->rightPointer;
-        } else
-        {
-            if (value < localUpperBranch->value) {
-            localUpperBranch = localUpperBranch->leftPointer;}
-        }
-    }
-    Node<T>* firstNode = localUpperBranch->rightPointer;
+    Node<T>* firstNode = target;
     Node<T>* secondNode = firstNode->rightPointer;
     //rotates the stuff
-    firstNode->rightPointer = secondNode->leftPointer;
+    firstNode->rightPointer = secondNode->leftPointer ? secondNode->leftPointer : nullptr;
     secondNode->leftPointer = firstNode;
-    if (value > localUpperBranch->value)
-    {
-        localUpperBranch->rightPointer = secondNode;
-    } else
-    {
-        localUpperBranch->leftPointer = secondNode;
-    }
+
+    firstNode->height = (firstNode->leftPointer ? firstNode->leftPointer->height : -1) > (firstNode->rightPointer ? firstNode->rightPointer->height : -1) ? (firstNode->leftPointer ? firstNode->leftPointer->height : -1) + 1 : (firstNode->rightPointer ? firstNode->rightPointer->height : -1) + 1;
+
+    secondNode->height = (secondNode->leftPointer ? secondNode->leftPointer->height : -1) > (secondNode->rightPointer ? secondNode->rightPointer->height : -1) ? (secondNode->leftPointer ? secondNode->leftPointer->height : -1)+1 : (secondNode->rightPointer ? secondNode->rightPointer->height : -1)+1;
+
+    return secondNode;
 }
 
 template <typename T>
-void Node<T>::correct(Node<T>* root)
+Node<T>* Node<T>::correct(Node<T>* root)
 {
-    int a = leftPointer ? leftPointer->height : - 1;
-    int b = rightPointer ? rightPointer->height : - 1;
+    Node<T>* returnRoot = root;
+    int a = leftPointer ? leftPointer->height : - 1; //-1
+    int b = rightPointer ? rightPointer->height : - 1; //height
+    int bf = a-b;
+    bool left = false;
     if (a - b > 1)
     {
-        rotateRight(root);
+        a = leftPointer->leftPointer ? leftPointer->leftPointer->height : - 1;
+        b = leftPointer->rightPointer ? leftPointer->rightPointer->height : - 1;
+        //first rotate
+        if (a - b > 1)
+        {
+            leftPointer = leftPointer->rotateRight(leftPointer);
+        } else
+        {
+            if (a - b < -1)
+            {
+                leftPointer = leftPointer->rotateLeft(root);
+            }
+        }
+        //second rotation
+        while (returnRoot->value != value)
+        {
+            if (value > returnRoot->value)
+            {
+                returnRoot = returnRoot->rightPointer;
+            } else
+            {
+                returnRoot = returnRoot->leftPointer;
+            }
+        }
+
+        return rotateRight(returnRoot);
     } else
     {
         if (a - b < -1)
         {
-            rotateLeft(root);
+            a = rightPointer->leftPointer ? rightPointer->leftPointer->height : - 1;
+            b = rightPointer->rightPointer ? rightPointer->rightPointer->height : - 1;
+            //first rotate
+            if (a - b > 1)
+            {
+                rightPointer->rotateRight(root);
+            } else
+            {
+                if (a - b < -1)
+                {
+                    rightPointer->rotateLeft(root);
+                }
+            }
+            //second rotation
+            while (returnRoot->value != value)
+            {
+                if (value > returnRoot->value)
+                {
+                    returnRoot = returnRoot->rightPointer;
+                } else
+                {
+                    returnRoot = returnRoot->leftPointer;
+                }
+            }
+
+            return rotateLeft(root);
         }
     }
+
+    return nullptr;
 }
 
 template <typename T>
@@ -139,7 +178,6 @@ bool Node<T>::grow(T val, Node<T>* root)
         if (val < value)
         {
             bool i = leftPointer->grow(val, root);
-            correct(root);
             //changes height
             if (i)
             {
@@ -149,6 +187,11 @@ bool Node<T>::grow(T val, Node<T>* root)
                 } else
                 {
                     height = leftPointer->height+1;
+                }
+                Node<T>* s = leftPointer->correct(root);
+                if (s)
+                {
+                    leftPointer = s;
                 }
             }
             return i;
@@ -171,7 +214,6 @@ bool Node<T>::grow(T val, Node<T>* root)
         if (val > value)
         {
             bool i = rightPointer->grow(val, root);
-            correct(root);
             //changes height
             if (i)
             {
@@ -181,6 +223,11 @@ bool Node<T>::grow(T val, Node<T>* root)
                 } else
                 {
                     height = rightPointer->height+1;
+                }
+                Node<T>* s = rightPointer->correct(root);
+                if (s)
+                {
+                    rightPointer = s;
                 }
             }
             return i;
@@ -209,6 +256,14 @@ Node<T>* Node<T>::locate(T val, Node<T>* rootL)
             leftPointer->value == val ? leftPointer : leftPointer->locate(val, nullptr));
     return returnN;
 }
+
+//template <typename T>
+//bool Node<T>::shrink(T targetValue, Node<T>* root)
+//{
+
+
+//    return 0;
+//}
 
 template <typename T>
 bool Node<T>::shrink(T targetValue, Node<T>* root)
@@ -365,6 +420,7 @@ bool Node<T>::shrink(T targetValue, Node<T>* root)
 
     return false;
 }
+
 
 //template <typename T>
 //void Node<T>::shrink(Node<T>* self, Node<T>* root)
@@ -641,15 +697,15 @@ BSTree<T>::~BSTree()
 //JR's
 
 //includes
-//TEST(JR_BSTree_Tests, FullTreeIsInIncludesWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(4);
-//    s.insert(2);
-//    ASSERT_TRUE(s.includes(2));
-//}
+TEST(JR_BSTree_Tests, FullTreeIsInIncludesWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    ASSERT_TRUE(s.includes(2));
+}
 
 //TEST(JR_BSTree_Tests, FullTreeIsOutIncludesWorks)
 //{
@@ -762,6 +818,7 @@ TEST(JR_BSTree_Tests, FullTreeCatapillarInsertAndRemoveWorks)
         s.insert(i+1);
         if (i >= 19)
         {
+            cout << "m" << endl;
             s.remove(i);
             s.remove(i-1);
             s.insert(i);
@@ -776,7 +833,7 @@ TEST(JR_BSTree_Tests, FullTreeCatapillarInsertAndRemoveWorks)
 //    s.remove(8);
 //    vector<int> t = {2, 3, 4, 5};
 
-    ASSERT_EQ(s.preOrder(), t);
+    ASSERT_EQ(s.inOrder(), t);
 }
 
 //TEST(JR_BSTree_Tests, FullTreeAllInInsertWorks)
