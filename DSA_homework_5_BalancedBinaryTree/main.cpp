@@ -18,7 +18,14 @@ class Duo
 public:
     bool succes;
     Node<T>* pointer;
+public:
+    Duo(bool succes, Node<T>* pointer);
 };
+
+template <typename T>
+Duo<T>::Duo(bool succes, Node<T>* pointer)
+    :succes{succes}, pointer{pointer}
+{}
 
 template <typename T>
 class Node
@@ -37,7 +44,7 @@ public:
     bool grow(T val, Node<T>* root);
     bool check(T val);
     Node<T>* locate(T val, Node<T>* rootL);
-    bool shrink(T targetValue, Node<T>* root);
+    Duo<T> shrink(T targetValue, Node<T>* root);
     vector<T> nextInOrder ();
     vector<T> nextPreOrder ();
     vector<T> nextPostOrder ();
@@ -266,11 +273,11 @@ Node<T>* Node<T>::locate(T val, Node<T>* rootL)
 //}
 
 template <typename T>
-bool Node<T>::shrink(T targetValue, Node<T>* root)
+Duo<T> Node<T>::shrink(T targetValue, Node<T>* root)
 {
     Node<T>* targetNode = nullptr;
     Node<T>* replacementLocation = nullptr;
-    bool success = false;
+    Duo<T> success(false,nullptr);
     //left side
     if(targetValue <= value)
     {
@@ -292,8 +299,8 @@ bool Node<T>::shrink(T targetValue, Node<T>* root)
                     targetNode->value = replacementLocation->value;
 
                     success = targetNode->shrink(replacementLocation->value, root);
-                    correct(root);
-                    if (success)
+                    correct(success.pointer);
+                    if (success.succes)
                     {
                         if (leftPointer)
                         {
@@ -318,12 +325,13 @@ bool Node<T>::shrink(T targetValue, Node<T>* root)
                     return success;
                 } else
                 {
+                    success.succes = true;
                     //at most one right pointer
                     leftPointer = targetNode->rightPointer;
                     targetNode->rightPointer = nullptr;
                     delete targetNode;
                     height = rightPointer->height + 1;
-                    return true;
+                    return success;
                 }
             } else
             {
@@ -354,8 +362,8 @@ bool Node<T>::shrink(T targetValue, Node<T>* root)
                     cout << "replaced with: " << rightPointer->value << endl;
 
                     success = targetNode->shrink(replacementLocation->value, root);
-                    correct(root);
-                    if (success)
+                    correct(success.pointer);
+                    if (success.succes)
                     {
                         if (leftPointer)
                         {
@@ -381,17 +389,18 @@ bool Node<T>::shrink(T targetValue, Node<T>* root)
                 } else
                 {
                     //at most one right pointer
+                    success.succes = true;
                     rightPointer = targetNode->rightPointer;
                     cout << "replaced with 2: " << rightPointer->value << endl;
                     targetNode->rightPointer = nullptr;
                     delete targetNode;
                     height = rightPointer->height + 1;
-                    return true;
+                    return success;
                 }
             } else
             {
                 success = rightPointer->shrink(targetValue, root);
-                if (success)
+                if (success.succes)
                 {
                     if (leftPointer)
                     {
@@ -418,7 +427,7 @@ bool Node<T>::shrink(T targetValue, Node<T>* root)
         }
     }
 
-    return false;
+    return success;
 }
 
 
