@@ -13,5 +13,5 @@ add_executable(DSA_homework_6_PriorityQueue
 
 include_directories(include src .)
 
-install(DSA_homework_6_PriorityQueue
+install(TARGETS DSA_homework_6_PriorityQueue
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
