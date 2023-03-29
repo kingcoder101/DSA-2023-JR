@@ -19,7 +19,7 @@ vector<T> mergeSort(vector<T> input)
         {
             returnVecA.push_back(input[a]);
         }
-        for (int a = half + 1; a <= input.size(); a++)
+        for (int a = half + 1; a < input.size(); a++)
         {
             returnVecB.push_back(input[a]);
         }
@@ -32,7 +32,7 @@ vector<T> mergeSort(vector<T> input)
         returnVec = {};
         int aPos = 0;
         int bPos = 0;
-        while (returnVecA.size() + returnVecB.size() < returnVec.size())
+        while (returnVecA.size() + returnVecB.size() > returnVec.size())
         {
             //if both exist and a is less than b
             if (returnVecA.size() > aPos && returnVecB.size() > bPos && returnVecA[aPos] < returnVecB[bPos])
@@ -71,7 +71,7 @@ vector<T> mergeSort(vector<T> input)
         {
             //shuffles the numbers around
             T hold = returnVec[0];
-            if (returnVec[1]>returnVec[0])
+            if (returnVec[1]<returnVec[0])
             {
                 returnVec[0] = returnVec[1];
                 returnVec[1] = hold;
@@ -110,11 +110,11 @@ TEST(JR_MergeSort_Tests, WorksHundred)
     vector<int> t;
     for (int i = 49; i >= 0; i--)
     {
-        s.push_back(-i);
+        t.push_back(-i);
     }
     for (int i = 0; i < 50; i++)
     {
-        s.push_back(i);
+        t.push_back(i);
     }
     for (int i = 0; i < 50; i++)
     {
