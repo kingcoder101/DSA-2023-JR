@@ -54,9 +54,10 @@ public:
     //Node<T>* rotateLeft(Node<T>* root);
     //Node<T>* correct(Node<T>* root);
     Tri<T> grow(T val);
-    //bool check(T val);
+    bool check(T val);
     //Node<T>* locate(T val, Node<T>* rootL);
-    //Tri<T> shrink(T targetValue, Node<T>* root);
+    Tri<T> shrink(T val);
+    Tri<T> l(T val);
     vector<T> nextInOrder ();
     vector<T> nextPreOrder ();
     vector<T> nextPostOrder ();
@@ -90,6 +91,15 @@ void Node<T>::fixHeight()
         r = rightPointer->height + 1;
     }
     height = l > r ? l : r;
+}
+
+template <typename T>
+bool Node<T>::check(T val)
+{
+    if (value == val)  {return true;}  else
+    {
+        return val > value ? (rightPointer == nullptr ? false : rightPointer->check(val))
+                           : (leftPointer  == nullptr ? false : leftPointer->check(val));}
 }
 
 template <typename T>
@@ -217,6 +227,205 @@ Tri<T> Node<T>::grow(T val)
 }
 
 template <typename T>
+Tri<T> Node<T>::shrink(T val)
+{
+    Tri t = Tri<T>(false);
+    //we are the target
+    if (val == value)
+    {
+        if (leftPointer)
+        {
+            Node<T>* replacementPointer = leftPointer;
+            while (replacementPointer->rightPointer)
+            {
+                replacementPointer = replacementPointer->rightPointer;
+            }
+            value = replacementPointer->value;
+            Tri s = Tri<T>(false);
+            s = leftPointer->shrink(value);
+            if (s.stage == -1)
+            {
+                delete leftPointer;
+                leftPointer = s.pointer;
+                s.stage = 0;
+            }
+            t = s.succes;
+        } else
+        {
+            t.pointer = rightPointer;
+            t.stage = -1;
+            t.succes = true;
+            rightPointer = nullptr;
+        }
+    } else
+    {
+        //val is on the right
+        if (val > value)
+        {
+            if (rightPointer)
+            {
+                t = rightPointer->shrink(val);
+                //if the right
+                if (t.stage == -1)
+                {
+                    delete rightPointer;
+                    t.stage = 0;
+                    rightPointer = t.pointer;
+                    fixHeight();
+                }
+                //
+            }
+        } else
+        {
+            //val is on the left
+            if (val < value)
+            {
+                if (leftPointer)
+                {
+                    t = leftPointer->shrink(val);
+                    //if the right
+                    if (t.stage == -1)
+                    {
+                        delete leftPointer;
+                        t.stage = 0;
+                        leftPointer = t.pointer;
+                        fixHeight();
+                    }
+                }
+            }
+        }
+    }
+
+    return t;
+}
+
+template <typename T>
+Tri<T> Node<T>::l(T val)
+{
+    Tri t = Tri<T>(false);
+    //val is on right side
+    if (val > value)
+    {
+        if (rightPointer)
+        {
+            t = rightPointer->shrink(val);
+            if (t.pointer)
+            {
+                rightPointer = t.pointer;
+                t.pointer = nullptr;
+            }
+            t.stage += 1;
+            if (t.succes == true)
+            {
+
+                //shuffles stuff around
+                int l = leftPointer ? leftPointer->height : -1;
+                int r = rightPointer ? rightPointer->height : -1;
+                Node<T>* replacementPointer = selfPointer;
+                if (l - r >= 2)
+                {
+                    l = leftPointer->leftPointer ? leftPointer->leftPointer->height : -1;
+                    r = leftPointer->rightPointer ? leftPointer->rightPointer->height : -1;
+                    if (l - r <= -1 && !leftPointer->leftPointer)
+                    {
+                        Node<T>* hold = leftPointer->rightPointer;
+                        leftPointer->rightPointer = hold->leftPointer;
+                        hold->leftPointer = leftPointer;
+                        leftPointer = hold;
+                    }
+                    Node<T>* replacementPointer = leftPointer;
+                    leftPointer = leftPointer->rightPointer;
+                    replacementPointer->rightPointer = selfPointer;
+                    t.pointer = replacementPointer;
+                }
+                replacementPointer->fixHeight();
+
+            } else {
+                if (t.pointer)
+                {
+                    t.pointer = nullptr;
+                }
+            }
+
+        } else
+        {
+            //val is added
+            rightPointer = new Node(val);
+            rightPointer->selfPointer = rightPointer;
+            if (leftPointer && leftPointer->height >= 1)
+            {
+                height = leftPointer->height + 1;
+            } else {
+                height = 1;
+            }
+            t.succes = true;
+        }
+    } else {
+        //val is on left side
+        if (val < value)
+        {
+            if (leftPointer)
+            {
+                t = leftPointer->shrink(val);
+                if (t.pointer)
+                {
+                    leftPointer = t.pointer;
+                    t.pointer = nullptr;
+                }
+                t.stage += 1;
+                if (t.succes == true)
+                {
+                    //shuffles stuff around
+                    int l = leftPointer ? leftPointer->height : -1;
+                    int r = rightPointer ? rightPointer->height : -1;
+                    Node<T>* replacementPointer = selfPointer;
+                    if (l - r <= -2)
+                    {
+                        l = rightPointer->leftPointer ? rightPointer->leftPointer->height : -1;
+                        r = rightPointer->rightPointer ? rightPointer->rightPointer->height : -1;
+                        if (l - r >= 1 && !rightPointer->rightPointer)
+                        {
+                            Node<T>* hold = rightPointer->leftPointer;
+                            rightPointer->leftPointer = hold->rightPointer;
+                            hold->rightPointer = rightPointer;
+                            rightPointer = hold;
+                        }
+                        Node<T>* replacementPointer = rightPointer;
+                        rightPointer = rightPointer->leftPointer;
+                        replacementPointer->leftPointer = selfPointer;
+                        t.pointer = replacementPointer;
+                    }
+                    replacementPointer->fixHeight();
+                } else {
+                    if (t.pointer)
+                    {
+                        t.pointer = nullptr;
+                    }
+                }
+            } else
+            {
+                //val is added
+                leftPointer = new Node(val);
+                leftPointer->selfPointer = leftPointer;
+                if (rightPointer && rightPointer->height)
+                {
+                    height = rightPointer->height + 1;
+                } else {
+                    height = 1;
+                }
+                t.succes = true;
+            }
+        }
+    }
+    //height change
+    int rightHeight = rightPointer ? rightPointer->height : 0;
+    int leftHeight = leftPointer ? leftPointer->height : 0;
+    height = rightHeight > leftHeight ? rightHeight + 1 : leftHeight + 1;
+
+    return t;
+}
+
+template <typename T>
 vector<T> Node<T>::nextInOrder ()
 {
     vector<T> localReturn = {};
@@ -291,9 +500,8 @@ vector<T> Node<T>::nextPostOrder ()
 template <typename T>
 Node<T>::~Node()
 {
-    if (rightPointer) {delete rightPointer;}
-    if (leftPointer) {delete leftPointer;}
-    if (selfPointer) {delete selfPointer;}
+    if (rightPointer != nullptr) {delete rightPointer;}
+    if (leftPointer != nullptr) {delete leftPointer;}
 }
 
 //BSTree code
@@ -349,6 +557,17 @@ void BSTree<T>::insert(T val)
 }
 
 template <typename T>
+void BSTree<T>::remove(T val)
+{
+    if (rootPointer)
+    {
+        Tri d = rootPointer->shrink(val);
+        numberOfNodes -= d.succes ? 1 : 0;
+        rootPointer = d.pointer ? d.pointer : rootPointer;
+    }
+}
+
+template <typename T>
 vector<T> BSTree<T>::inOrder ()
 {
     vector<T> returnVec = {};
@@ -380,6 +599,24 @@ vector<T> BSTree<T>::postOrder ()
         returnVec = rootPointer->nextPostOrder();
     }
     return returnVec;
+}
+
+template <typename T>
+int BSTree<T>::size()
+{
+    return numberOfNodes;
+}
+
+template <typename T>
+bool BSTree<T>::isEmpty()
+{
+    return rootPointer ? false : true;
+}
+
+template <typename T>
+bool BSTree<T>::includes(T val)
+{
+    if (rootPointer) {return rootPointer->check(val);} else {return false;}
 }
 
 //template <typename T>
@@ -1032,206 +1269,199 @@ vector<T> BSTree<T>::postOrder ()
 //        delete rootPointer;
 //}
 
-//// tests
-////JR's
+// tests
+//JR's
 
-////includes
-//TEST(JR_BSTree_Tests, FullTreeIsInIncludesWorks)
+//includes
+TEST(JR_BSTree_Tests, FullTreeIsInIncludesWorks)
+{
+    BSTree<int> s;
+    s.insert(1);
+    s.insert(3);
+    s.insert(4);
+    s.remove(4);
+    ASSERT_TRUE(!s.includes(4));
+}
+
+//TEST(JR_BSTree_Tests, FullTreeIsOutIncludesWorks)
 //{
 //    BSTree<int> s;
-//    s.insert(1);
+//    s.insert(5);
 //    s.insert(3);
 //    s.insert(4);
-//    s.remove(4);
-//    ASSERT_TRUE(s.includes(4));
+//    s.insert(2);
+//    ASSERT_TRUE(!s.includes(9));
 //}
 
-////TEST(JR_BSTree_Tests, FullTreeIsOutIncludesWorks)
-////{
-////    BSTree<int> s;
-////    s.insert(5);
-////    s.insert(3);
-////    s.insert(4);
-////    s.insert(2);
-////    ASSERT_TRUE(!s.includes(9));
-////}
-
-////TEST(JR_BSTree_Tests, FullTreeIsOutInsertAndRemoveIncludesWorks)
-////{
-////    BSTree<int> s;
-////    s.insert(5);
-////    s.insert(3);
-////    s.insert(4);
-////    s.insert(2);
-////    s.remove(2);
-////    s.remove(4);
-////    s.insert(6);
-////    ASSERT_TRUE(!s.includes(2));
-
-////}
-
-////TEST(JR_BSTree_Tests, FullTreeIsInInsertAndRemoveIncludesWorks)
-////{
-////    BSTree<int> s;
-////    s.insert(5);
-////    s.insert(3);
-////    s.insert(4);
-////    s.insert(2);
-////    s.remove(2);
-////    s.remove(4);
-////    s.insert(2);
-////    ASSERT_TRUE(s.includes(2));
-////}
-
-////TEST(JR_BSTree_Tests, EmptyTreeIncludesWorks)
-////{
-////    BSTree<int> s;
-////    ASSERT_TRUE(!s.includes(2));
-////}
-
-//////size
-////TEST(JR_BSTree_Tests, FullTreeSizeWorks)
-////{
-////    BSTree<int> s;
-////    s.insert(5);
-////    s.insert(3);
-////    s.insert(4);
-////    s.insert(2);
-////    ASSERT_EQ(s.size(), 4);
-////}
-
-////TEST(JR_BSTree_Tests, EmptyTreeSizeWorks)
-////{
-////    BSTree<int> s;
-////    ASSERT_EQ(s.size(),0);
-////}
-
-//////isEmpty
-////TEST(JR_BSTree_Tests, FullTreeIsEmptyWorks)
-////{
-////    BSTree<int> s;
-////    s.insert(5);
-////    s.insert(3);
-////    s.insert(4);
-////    s.insert(2);
-////    ASSERT_TRUE(!s.isEmpty());
-////}
-
-////TEST(JR_BSTree_Tests, EmptyTreeIsEmptyWorks)
-////{
-////    BSTree<int> s;
-////    ASSERT_TRUE(s.isEmpty());
-////}
-
-//////insert and remove
-////TEST(JR_BSTree_Tests, FullTreeFiftyInsertWorks)
-////{
-////    BSTree<int> s;
-////    for (int i = 0; i < 50; i++)
-////    {
-////        s.insert(i);
-////    }
-////    ASSERT_EQ(s.size(),50);
-////}
-
-////TEST(JR_BSTree_Tests, FullTreeFiftyRemoveWorks) //fails
-////{
-////    BSTree<int> s;
-////    for (int i = 0; i < 50; i++)
-////    {
-////        s.insert(i);
-////    }
-
-////    for (int i = 0; i < 50; i++)
-////    {
-////        s.remove(i);
-////    }
-////    ASSERT_EQ(s.size(), 0);
-////}
-
-//TEST(JR_BSTree_Tests, FullTreeCatapillarInsertAndRemoveWorks)
+//TEST(JR_BSTree_Tests, FullTreeIsOutInsertAndRemoveIncludesWorks)
 //{
 //    BSTree<int> s;
-//    for (int i = 17; i < 50; i++)
-//    {
-//        s.insert(i+1);
-//        if (i >= 19)
-//        {
-//            cout << "m" << endl;
-//            s.remove(i);
-//            s.remove(i-1);
-//            s.insert(i);
-//        }
-//    }
-//    vector<int> t = {49,50};
-////    s.insert(2);
-////    s.insert(8);
-////    s.insert(3);
-////    s.insert(5);
-////    s.insert(4);
-////    s.remove(8);
-////    vector<int> t = {2, 3, 4, 5};
+//    s.insert(5);
+//    s.insert(3);
+//    s.insert(4);
+//    s.insert(2);
+//    s.remove(2);
+//    s.remove(4);
+//    s.insert(6);
+//    ASSERT_TRUE(!s.includes(2));
 
-//    ASSERT_EQ(s.inOrder(), t);
 //}
 
-////TEST(JR_BSTree_Tests, FullTreeAllInInsertWorks)
-////{
-////    BSTree<int> s;
-////    s.insert(5);
-////    s.insert(3);
-////    s.insert(4);
-////    s.insert(1);
-////    s.insert(9);
-////    s.insert(6);
-////    s.insert(2);
-////    s.insert(7);
-////    s.insert(8);
-////    ASSERT_TRUE(s.includes(1) && s.includes(2) && s.includes(3) && s.includes(4) && s.includes(5) && s.includes(6) && s.includes(7) && s.includes(8) && s.includes(9));
-////}
+//TEST(JR_BSTree_Tests, FullTreeIsInInsertAndRemoveIncludesWorks)
+//{
+//    BSTree<int> s;
+//    s.insert(5);
+//    s.insert(3);
+//    s.insert(4);
+//    s.insert(2);
+//    s.remove(2);
+//    s.remove(4);
+//    s.insert(2);
+//    ASSERT_TRUE(s.includes(2));
+//}
 
-////TEST(JR_BSTree_Tests, FullTreeDoubleInsertWorks)
-////{
-////    BSTree<int> s;
-////    s.insert(5);
-////    s.insert(3);
-////    s.insert(4);
-////    s.insert(1);
-////    s.insert(2);
-////    int yes = s.size();
-////    s.insert(5);
-////    ASSERT_EQ(s.size(), yes);
-////}
+//TEST(JR_BSTree_Tests, EmptyTreeIncludesWorks)
+//{
+//    BSTree<int> s;
+//    ASSERT_TRUE(!s.includes(2));
+//}
 
-////TEST(JR_BSTree_Tests, InOrderWorks)
-////{
-////    BSTree<int> s;
-////    s.insert(5);
-////    s.insert(3);
-////    s.insert(4);
-////    s.insert(2);
-////    s.insert(7);
-////    s.insert(8);
-////    s.insert(6);
+////size
+//TEST(JR_BSTree_Tests, FullTreeSizeWorks)
+//{
+//    BSTree<int> s;
+//    s.insert(5);
+//    s.insert(3);
+//    s.insert(4);
+//    s.insert(2);
+//    ASSERT_EQ(s.size(), 4);
+//}
 
-////    vector<int> t {2,3,4,5,6,7,8};
-////    ASSERT_EQ(s.inOrder(), t);
-////}
+//TEST(JR_BSTree_Tests, EmptyTreeSizeWorks)
+//{
+//    BSTree<int> s;
+//    ASSERT_EQ(s.size(),0);
+//}
 
-////TEST(JR_BSTree_Tests, PreOrderWorks)
-////{
-////    BSTree<int> s;
-////    s.insert(5);
-////    s.insert(3);
-////    s.insert(4);
-////    s.insert(2);
-////    s.insert(7);
-////    s.insert(8);
-////    s.insert(6);
+////isEmpty
+//TEST(JR_BSTree_Tests, FullTreeIsEmptyWorks)
+//{
+//    BSTree<int> s;
+//    s.insert(5);
+//    s.insert(3);
+//    s.insert(4);
+//    s.insert(2);
+//    ASSERT_TRUE(!s.isEmpty());
+//}
 
-////    vector<int> t {5,3,2,4,7,6,8};
-////    ASSERT_EQ(s.preOrder(), t);
-////}
+//TEST(JR_BSTree_Tests, EmptyTreeIsEmptyWorks)
+//{
+//    BSTree<int> s;
+//    ASSERT_TRUE(s.isEmpty());
+//}
+
+////insert and remove
+//TEST(JR_BSTree_Tests, FullTreeFiftyInsertWorks)
+//{
+//    BSTree<int> s;
+//    for (int i = 0; i < 50; i++)
+//    {
+//        s.insert(i);
+//    }
+//    ASSERT_EQ(s.size(),50);
+//}
+
+//TEST(JR_BSTree_Tests, FullTreeFiftyRemoveWorks) //fails
+//{
+//    BSTree<int> s;
+//    for (int i = 0; i < 50; i++)
+//    {
+//        s.insert(i);
+//    }
+
+//    for (int i = 0; i < 50; i++)
+//    {
+//        s.remove(i);
+//    }
+//    ASSERT_EQ(s.size(), 0);
+//}
+
+TEST(JR_BSTree_Tests, FullTreeCatapillarInsertAndRemoveWorks)
+{
+    BSTree<int> s;
+    for (int i = 17; i < 50; i++)
+    {
+        s.insert(i+1);
+        if (i >= 19)
+        {
+            s.remove(i);
+            s.remove(i-1);
+            s.insert(i);
+        }
+    }
+
+    vector<int> t = {2, 3, 4, 5};
+
+    ASSERT_EQ(s.inOrder(), t);
+}
+
+TEST(JR_BSTree_Tests, FullTreeAllInInsertWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(1);
+    s.insert(9);
+    s.insert(6);
+    s.insert(2);
+    s.insert(7);
+    s.insert(8);
+    ASSERT_TRUE(s.includes(1) && s.includes(2) && s.includes(3) && s.includes(4) && s.includes(5) && s.includes(6) && s.includes(7) && s.includes(8) && s.includes(9));
+}
+
+TEST(JR_BSTree_Tests, FullTreeDoubleInsertWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(1);
+    s.insert(2);
+    int yes = s.size();
+    s.insert(5);
+    ASSERT_EQ(s.size(), yes);
+}
+
+TEST(JR_BSTree_Tests, InOrderWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    s.insert(7);
+    s.insert(8);
+    s.insert(6);
+
+    vector<int> t {2,3,4,5,6,7,8};
+    ASSERT_EQ(s.inOrder(), t);
+}
+
+TEST(JR_BSTree_Tests, PreOrderWorks)
+{
+    BSTree<int> s;
+    s.insert(5);
+    s.insert(3);
+    s.insert(4);
+    s.insert(2);
+    s.insert(7);
+    s.insert(8);
+    s.insert(6);
+
+    vector<int> t {5,3,2,4,7,6,8};
+    ASSERT_EQ(s.preOrder(), t);
+}
 
 TEST(JR_BSTree_Tests, PostOrderWorks)
 {
@@ -1245,21 +1475,9 @@ TEST(JR_BSTree_Tests, PostOrderWorks)
     s.insert(6);
 
     vector<int> t {2,3,6,5,8,7,4};
-    ASSERT_EQ(s.postOrder(), t);
+    ASSERT_EQ(s.inOrder(), t);
 }
 
-//TEST(JR_BSTree_Tests, PostOrderWorks)
-//{
-//    BSTree<int> s;
-//    s.insert(1);
-//    s.insert(5);
-//    s.insert(3);
-//    s.insert(7);
-//    s.insert(8);
-//    s.insert(6);
-
-//    ASSERT_EQ(s.rootPointer->height, 3);
-//}
 
 int main(int argc, char **argv)
 {
